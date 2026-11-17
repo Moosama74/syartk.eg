@@ -1,0 +1,415 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}
+  {% if action == 'create' %}إضافة سيارة جديدة للمعرض{% else %}تعديل بيانات: {{ vehicle.brand }} {{ vehicle.model }}{% endif %}
+{% endblock %}
+
+{% block content %}
+
+<!-- Form Header -->
+<div class="flex items-center justify-between mb-8 pb-4 border-b border-white/10">
+  <div>
+    <nav class="flex items-center gap-2 text-xs text-gray-400 mb-1">
+      <a href="/admin/dashboard" class="hover:text-gold">لوحة التحكم الرئيسية</a>
+      <span>/</span>
+      <span class="text-white">{% if action == 'create' %}إضافة سيارة جديدة{% else %}تعديل السيارة #{{ vehicle.id }}{% endif %}</span>
+    </nav>
+    <h1 class="text-2xl sm:text-3xl font-black text-white">
+      {% if action == 'create' %}إضافة سيارة جديدة إلى المعرض{% else %}تعديل بيانات {{ vehicle.brand }} {{ vehicle.model }} ({{ vehicle.year }}){% endif %}
+    </h1>
+    <p class="text-xs text-gray-400 mt-1">أدخل بيانات السيارة والأسعار والصور، وسيتم نشرها أو حفظها كمسودة مباشرة في الموقع.</p>
+  </div>
+
+  <div class="flex items-center gap-3">
+    <a href="/admin/dashboard" class="bg-white/10 hover:bg-white/20 text-gray-300 px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2">
+      <i class="fas fa-arrow-right"></i>
+      <span>إلغاء والعودة للوحة التحكم</span>
+    </a>
+  </div>
+</div>
+
+<form action="{% if action == 'create' %}/admin/vehicles/new{% else %}/admin/vehicles/{{ vehicle.id }}/edit{% endif %}" method="POST" id="vehicleMasterForm" class="space-y-8">
+  
+  <input type="hidden" id="cover_image" name="cover_image" value="{{ vehicle.cover_image if vehicle else '' }}">
+  <input type="hidden" id="media_json" name="media_json" value='{% if media_items %}[{% for m in media_items %}{"url": "{{ m.url }}", "media_type": "{{ m.media_type }}", "caption": "{{ m.caption or '' }}"}{% if not loop.last %},{% endif %}{% endfor %}]{% else %}[]{% endif %}'>
+  <input type="hidden" name="redirect_to" value="/admin/dashboard?tab=vehicles">
+
+  <!-- ========================================================================= -->
+  <!-- 1. BASIC IDENTIFICATION                                                   -->
+  <!-- ========================================================================= -->
+  <div class="glass-card rounded-3xl p-6 sm:p-8 border border-white/15">
+    <h3 class="text-base font-bold text-gold uppercase tracking-wider mb-6 flex items-center gap-2">
+      <i class="fas fa-car-side"></i>
+      <span>1. هوية وموديل السيارة الأساسي</span>
+    </h3>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      
+      <!-- Brand -->
+      <div>
+        <label class="block text-xs font-bold text-gray-200 mb-1">الماركة العالمية (Brand) *</label>
+        <input type="text" id="carBrand" name="brand" value="{{ vehicle.brand if vehicle else '' }}" required placeholder="مثال: Mercedes-Benz أو BMW أو Porsche" class="w-full bg-deep border border-white/15 focus:border-gold rounded-xl px-4 py-2.5 text-xs text-white outline-none">
+      </div>
+
+      <!-- Model -->
+      <div>
+        <label class="block text-xs font-bold text-gray-200 mb-1">الموديل والطراز (Model) *</label>
+        <input type="text" id="carModel" name="model" value="{{ vehicle.model if vehicle else '' }}" required placeholder="مثال: G63 AMG أو 911 Carrera أو X7" class="w-full bg-deep border border-white/15 focus:border-gold rounded-xl px-4 py-2.5 text-xs text-white outline-none">
+      </div>
+
+      <!-- Year -->
+      <div>
+        <label class="block text-xs font-bold text-gray-200 mb-1">سنة الصنع (Year) *</label>
+        <input type="number" id="carYear" name="year" value="{{ vehicle.year if vehicle else 2024 }}" required min="2000" max="2027" class="w-full bg-deep border border-white/15 focus:border-gold rounded-xl px-4 py-2.5 text-xs text-white outline-none font-mono">
+      </div>
+
+      <!-- Trim / Category -->
+      <div>
+        <label class="block text-xs font-bold text-gray-200 mb-1">الفئة / الباكج (Trim)</label>
+        <input type="text" name="trim" value="{{ vehicle.trim if vehicle else '' }}" placeholder="مثال: Night Package II أو M-Sport أو أحدث فئة" class="w-full bg-deep border border-white/15 focus:border-gold rounded-xl px-4 py-2.5 text-xs text-white outline-none">
+      </div>
+
+      <!-- Country of Origin -->
+      <div>
+        <label class="block text-xs font-bold text-gray-200 mb-1">بلد الاستيراد والمنشأ *</label>
+        <select id="carOrigin" name="country_of_origin" required class="w-full bg-deep border border-white/15 focus:border-gold rounded-xl px-4 py-2.5 text-xs text-white outline-none">
+          <option value="Germany" {% if vehicle and 'Germany' in vehicle.country_of_origin %}selected{% endif %}>🇩🇪 ألمانيا (Germany)</option>
+          <option value="South Korea" {% if vehicle and 'Korea' in vehicle.country_of_origin %}selected{% endif %}>🇰🇷 كوريا الجنوبية (South Korea)</option>
+          <option value="UAE (Gulf Specs)" {% if vehicle and ('UAE' in vehicle.country_of_origin or 'Gulf' in vehicle.country_of_origin) %}selected{% endif %}>🇦🇪 الإمارات (Gulf Specs)</option>
+          <option value="USA" {% if vehicle and 'USA' in vehicle.country_of_origin %}selected{% endif %}>🇺🇸 الولايات المتحدة (USA)</option>
+          <option value="Japan" {% if vehicle and 'Japan' in vehicle.country_of_origin %}selected{% endif %}>🇯🇵 اليابان (Japan)</option>
+        </select>
+      </div>
+
+      <!-- VIN Number (Optional with auto-gen) -->
+      <div>
+        <label class="block text-xs font-bold text-gray-200 mb-1">
+          رقم الشاسيه (VIN) <span class="text-gold text-[10px] font-normal">(اختياري - يولد آلياً)</span>
+        </label>
+        <input type="text" name="vin" value="{{ vehicle.vin if vehicle else '' }}" placeholder="اتركه فارغاً للتوليد التلقائي" class="w-full bg-deep border border-white/15 focus:border-gold rounded-xl px-4 py-2.5 text-xs text-gold font-mono uppercase outline-none">
+      </div>
+
+      <!-- Mileage -->
+      <div>
+        <label class="block text-xs font-bold text-gray-200 mb-1">الكيلومترات (KM) *</label>
+        <input type="number" name="mileage" value="{{ vehicle.mileage if vehicle else 0 }}" required min="0" class="w-full bg-deep border border-white/15 focus:border-gold rounded-xl px-4 py-2.5 text-xs text-white font-mono outline-none">
+        <span class="text-[10px] text-gray-500 mt-0.5 block">اكتب 0 إذا كانت زيرو</span>
+      </div>
+
+      <!-- Vehicle Condition -->
+      <div>
+        <label class="block text-xs font-bold text-gray-200 mb-1">حالة الفحص والدهانات *</label>
+        <input type="text" name="vehicle_condition" value="{{ vehicle.vehicle_condition if vehicle else 'فابريكة بالكامل - حالة المصنع' }}" required class="w-full bg-deep border border-white/15 focus:border-gold rounded-xl px-4 py-2.5 text-xs text-white outline-none">
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 2. PRICING & INVENTORY                                                    -->
+  <!-- ========================================================================= -->
+  <div class="glass-card rounded-3xl p-6 sm:p-8 border border-white/15">
+    <h3 class="text-base font-bold text-gold uppercase tracking-wider mb-6 flex items-center gap-2">
+      <i class="fas fa-dollar-sign"></i>
+      <span>2. السعر بالجنيه المصري والمخزون وحالة العرض</span>
+    </h3>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      
+      <!-- Selling Price -->
+      <div>
+        <label class="block text-xs font-bold text-gold mb-1">سعر البيع الإجمالي في مصر (ج.م) *</label>
+        <div class="relative">
+          <input type="number" step="1000" name="selling_price_egp" value="{{ vehicle.selling_price_egp | int if vehicle else '' }}" required placeholder="مثال: 7500000" class="w-full bg-deep border border-gold/40 focus:border-gold rounded-xl px-4 py-3 text-sm text-white font-mono font-black outline-none">
+          <span class="absolute left-3 top-3 text-xs text-gold font-bold">ج.م</span>
+        </div>
+      </div>
+
+      <!-- Deposit -->
+      <div>
+        <label class="block text-xs font-bold text-gray-300 mb-1">عربون تأكيد الجدية (ج.م)</label>
+        <div class="relative">
+          <input type="number" step="1000" name="reservation_deposit_egp" value="{{ vehicle.reservation_deposit_egp | int if vehicle else 100000 }}" placeholder="مثال: 150000" class="w-full bg-deep border border-white/15 focus:border-gold rounded-xl px-4 py-3 text-sm text-white font-mono font-bold outline-none">
+          <span class="absolute left-3 top-3 text-xs text-gray-400 font-bold">ج.م</span>
+        </div>
+      </div>
+
+      <!-- Listing Status -->
+      <div>
+        <label class="block text-xs font-bold text-gray-300 mb-1">حالة العرض والنشر *</label>
+        <select name="status" required class="w-full bg-deep border border-white/15 focus:border-gold rounded-xl px-4 py-3 text-xs text-white outline-none">
+          <option value="available" {% if not vehicle or vehicle.status == 'available' %}selected{% endif %}>🟢 متاحة للبيع فوراً (Available)</option>
+          <option value="reserved" {% if vehicle and vehicle.status == 'reserved' %}selected{% endif %}>🟡 محجوزة للعميل (Reserved)</option>
+          <option value="sold" {% if vehicle and vehicle.status == 'sold' %}selected{% endif %}>🔴 تم البيع (Sold)</option>
+          <option value="hidden" {% if vehicle and vehicle.status == 'hidden' %}selected{% endif %}>⚪ مسودة مخفية للتحضير (Hidden)</option>
+        </select>
+      </div>
+
+      <!-- Stock Units -->
+      <div>
+        <label class="block text-xs font-bold text-emerald-400 mb-1">الكمية المتاحة (عدد السيارات) *</label>
+        <input type="number" name="units_available" value="{{ vehicle.units_available if vehicle else 1 }}" required min="0" class="w-full bg-deep border border-emerald-500/40 focus:border-emerald-500 rounded-xl px-4 py-3 text-sm text-emerald-400 font-mono font-bold outline-none">
+      </div>
+
+    </div>
+
+    <!-- Badges Checkboxes -->
+    <div class="mt-6 pt-6 border-t border-white/10 flex flex-wrap items-center gap-6 text-xs text-gray-300">
+      <label class="flex items-center gap-2 cursor-pointer bg-white/5 px-3 py-2 rounded-xl border border-white/5 hover:border-gold/30">
+        <input type="checkbox" name="is_featured" value="1" {% if vehicle and vehicle.is_featured %}checked{% endif %} class="w-4 h-4 rounded text-gold focus:ring-0">
+        <span class="font-bold text-gold">تثبيت في سيارات المعرض المميزة (Featured)</span>
+      </label>
+
+      <label class="flex items-center gap-2 cursor-pointer bg-white/5 px-3 py-2 rounded-xl border border-white/5 hover:border-gold/30">
+        <input type="checkbox" name="is_latest" value="1" {% if not vehicle or vehicle.is_latest %}checked{% endif %} class="w-4 h-4 rounded text-gold focus:ring-0">
+        <span>إظهار في أحدث الواردات (Latest Arrival)</span>
+      </label>
+
+      <label class="flex items-center gap-2 cursor-pointer bg-white/5 px-3 py-2 rounded-xl border border-white/5 hover:border-gold/30">
+        <input type="checkbox" name="is_special_offer" value="1" {% if vehicle and vehicle.is_special_offer %}checked{% endif %} class="w-4 h-4 rounded text-gold focus:ring-0">
+        <span>وضع شارة عرض خاص (Special Offer)</span>
+      </label>
+    </div>
+
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 3. REAL MEDIA UPLOADER & PRESETS                                          -->
+  <!-- ========================================================================= -->
+  <div class="glass-card rounded-3xl p-6 sm:p-8 border border-white/15">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+      <div>
+        <h3 class="text-base font-bold text-gold uppercase tracking-wider flex items-center gap-2">
+          <i class="fas fa-images"></i>
+          <span>3. صور وفيديوهات السيارة الحقيقية</span>
+        </h3>
+        <p class="text-xs text-gray-400 mt-1">ارفع صوراً حقيقية من جهازك، أو اختر من الصور الجاهزة بالأسفل إذا كنت ترغب بتجربة الإضافة فوراً.</p>
+      </div>
+
+      <!-- Quick Preset Photos Helper -->
+      <div class="flex flex-wrap items-center gap-2 text-xs">
+        <span class="text-gray-400 text-[11px]">صور جاهزة للتجربة:</span>
+        <button type="button" class="preset-photo-btn px-2.5 py-1 bg-white/5 hover:bg-gold hover:text-black rounded-lg transition" data-img-url="https://images.unsplash.com/photo-1520031441872-265e4ff70366?auto=format&fit=crop&w=1200&q=80" data-caption="مرسيدس جي كلاس G63 AMG">
+          مرسيدس
+        </button>
+        <button type="button" class="preset-photo-btn px-2.5 py-1 bg-white/5 hover:bg-gold hover:text-black rounded-lg transition" data-img-url="https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1200&q=80" data-caption="بورش 911 كاريرا 4S">
+          بورش
+        </button>
+        <button type="button" class="preset-photo-btn px-2.5 py-1 bg-white/5 hover:bg-gold hover:text-black rounded-lg transition" data-img-url="https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=1200&q=80" data-caption="بي إم دبليو X7 M60i">
+          BMW
+        </button>
+        <button type="button" class="preset-photo-btn px-2.5 py-1 bg-white/5 hover:bg-gold hover:text-black rounded-lg transition" data-img-url="https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?auto=format&fit=crop&w=1200&q=80" data-caption="رينج روفر سبورت">
+          رينج روفر
+        </button>
+      </div>
+    </div>
+
+    <!-- Drag & Drop Upload Zone -->
+    <div id="mediaDropzone" class="border-2 border-dashed border-white/20 hover:border-gold rounded-2xl p-6 text-center cursor-pointer bg-black/40 transition mb-5">
+      <div class="py-4 flex flex-col items-center justify-center">
+        <i class="fas fa-cloud-upload-alt text-3xl text-gold mb-2"></i>
+        <p class="text-sm font-semibold text-gray-200">اضغط هنا أو اسحب الصور والفيديوهات لرفعها من جهازك (يدعم صور وفيديوهات متعددة)</p>
+        <p class="text-xs text-gray-500 mt-1">يدعم JPG, PNG, WEBP, MP4 بأعلى دقة</p>
+      </div>
+    </div>
+    <input type="file" id="mediaFileInput" multiple accept="image/*,video/*" class="hidden">
+
+    <!-- Direct URL Inserter -->
+    <div class="p-4 bg-white/5 rounded-2xl border border-white/10 flex flex-col sm:flex-row items-center gap-3 mb-6">
+      <input type="url" id="externalMediaUrl" placeholder="أو الصق رابط صورة / فيديو خارجي عالي الجودة (https://...)" class="flex-1 bg-deep border border-white/15 px-3 py-2 rounded-xl text-xs text-white focus:border-gold outline-none">
+      <select id="externalMediaType" class="bg-deep border border-white/15 px-3 py-2 rounded-xl text-xs text-white focus:border-gold outline-none">
+        <option value="image">صورة (Image)</option>
+        <option value="video">فيديو (Video)</option>
+      </select>
+      <button type="button" id="addExternalMediaBtn" class="bg-white/10 hover:bg-gold hover:text-black text-white px-4 py-2 rounded-xl text-xs font-bold transition">
+        إضافة الرابط
+      </button>
+    </div>
+
+    <!-- Media Tiles Preview Grid -->
+    <div id="mediaPreviewContainer" class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-4">
+      <!-- Injected dynamically by admin.js -->
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 4. LUXURY FEATURES & SPECS CHECKLIST (NO JSON REQUIRED!)                  -->
+  <!-- ========================================================================= -->
+  <div class="glass-card rounded-3xl p-6 sm:p-8 border border-white/15">
+    <div class="mb-6">
+      <h3 class="text-base font-bold text-gold uppercase tracking-wider flex items-center gap-2">
+        <i class="fas fa-list-check"></i>
+        <span>4. كماليات ومواصفات السيارة (اختيار مباشر بعلامات صح)</span>
+      </h3>
+      <p class="text-xs text-gray-400 mt-1">اختر التجهيزات المتوفرة في السيارة بنقرة واحدة، وسيتم تنسيقها تلقائياً بصفحة السيارة للعملاء.</p>
+    </div>
+
+    <!-- Feature Checkboxes Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs text-gray-200">
+      
+      <label class="flex items-center gap-2.5 p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 cursor-pointer transition">
+        <input type="checkbox" name="features" value="فتحة سقف بانوراما كهربائية تفاعلية" class="w-4 h-4 rounded text-gold focus:ring-0">
+        <span>فتحة سقف بانوراما كهربائية</span>
+      </label>
+
+      <label class="flex items-center gap-2.5 p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 cursor-pointer transition">
+        <input type="checkbox" name="features" value="كاميرات 360 درجة مع رؤية ثلاثية الأبعاد 3D" class="w-4 h-4 rounded text-gold focus:ring-0">
+        <span>كاميرات 360 درجة رؤية 3D</span>
+      </label>
+
+      <label class="flex items-center gap-2.5 p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 cursor-pointer transition">
+        <input type="checkbox" name="features" value="حساسات ركن 360 ومساعد الاصطفاف الذاتي Auto Park" class="w-4 h-4 rounded text-gold focus:ring-0">
+        <span>حساسات ركن واصطفاف ذاتي</span>
+      </label>
+
+      <label class="flex items-center gap-2.5 p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 cursor-pointer transition">
+        <input type="checkbox" name="features" value="مقاعد جلد نابا طبيعي فاخر مع تبريد وتدفئة ومساج" class="w-4 h-4 rounded text-gold focus:ring-0">
+        <span>مقاعد جلد نابا تبريد وتدفئة</span>
+      </label>
+
+      <label class="flex items-center gap-2.5 p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 cursor-pointer transition">
+        <input type="checkbox" name="features" value="نظام صوتي بريميوم فاخر فائق النقاء (Burmester / Bose)" class="w-4 h-4 rounded text-gold focus:ring-0">
+        <span>ساوند سيستم بريميوم فاخر</span>
+      </label>
+
+      <label class="flex items-center gap-2.5 p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 cursor-pointer transition">
+        <input type="checkbox" name="features" value="رادار القيادة الذاتية التفاعلي ومثبت السرعة المتكيف ACC" class="w-4 h-4 rounded text-gold focus:ring-0">
+        <span>رادار ذكي ومثبت سرعة متكيف</span>
+      </label>
+
+      <label class="flex items-center gap-2.5 p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 cursor-pointer transition">
+        <input type="checkbox" name="features" value="نظام مراقبة النقطة العمياء ومساعد تحديد المسار" class="w-4 h-4 rounded text-gold focus:ring-0">
+        <span>نقطة عمياء وتحديد مسار</span>
+      </label>
+
+      <label class="flex items-center gap-2.5 p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 cursor-pointer transition">
+        <input type="checkbox" name="features" value="شاشة لمس مركزية عملاقة مع Apple CarPlay و Android Auto" class="w-4 h-4 rounded text-gold focus:ring-0">
+        <span>شاشة Apple CarPlay لاسلكي</span>
+      </label>
+
+      <label class="flex items-center gap-2.5 p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 cursor-pointer transition">
+        <input type="checkbox" name="features" value="شاحن هواتف ذكي لاسلكي فائق السرعة" class="w-4 h-4 rounded text-gold focus:ring-0">
+        <span>شاحن هواتف لاسلكي ذكي</span>
+      </label>
+
+      <label class="flex items-center gap-2.5 p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 cursor-pointer transition">
+        <input type="checkbox" name="features" value="إضاءة ليد ذكية تفاعلية Matrix LED / Laser Light" class="w-4 h-4 rounded text-gold focus:ring-0">
+        <span>إضاءة ليد ذكية Matrix / Laser</span>
+      </label>
+
+      <label class="flex items-center gap-2.5 p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 cursor-pointer transition">
+        <input type="checkbox" name="features" value="بصمة دخول وتشغيل ذكي بدون مفتاح Keyless Entry & Go" class="w-4 h-4 rounded text-gold focus:ring-0">
+        <span>بصمة دخول وتشغيل ذكي</span>
+      </label>
+
+      <label class="flex items-center gap-2.5 p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 cursor-pointer transition">
+        <input type="checkbox" name="features" value="شنطة خلفية كهربائية ذكية تفتح بحركة القدم" class="w-4 h-4 rounded text-gold focus:ring-0">
+        <span>شنطة كهرباء تفتح بالقدم</span>
+      </label>
+
+      <label class="flex items-center gap-2.5 p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 cursor-pointer transition">
+        <input type="checkbox" name="features" value="جنوط سبور أصلية رياضية قياس كبير بتصميم حصري" class="w-4 h-4 rounded text-gold focus:ring-0">
+        <span>جنوط سبور أصلية قياس كبير</span>
+      </label>
+
+      <label class="flex items-center gap-2.5 p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 cursor-pointer transition">
+        <input type="checkbox" name="features" value="نظام تعليق هوائي هيدروليكي ذكي متكيف Air Suspension" class="w-4 h-4 rounded text-gold focus:ring-0">
+        <span>عفشة هواء Air Suspension</span>
+      </label>
+
+      <label class="flex items-center gap-2.5 p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 cursor-pointer transition">
+        <input type="checkbox" name="features" value="إضاءة محيطية تفاعلية بـ 64 لون Ambient Lighting" class="w-4 h-4 rounded text-gold focus:ring-0">
+        <span>إضاءة داخلية 64 لون Ambient</span>
+      </label>
+
+      <label class="flex items-center gap-2.5 p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 cursor-pointer transition">
+        <input type="checkbox" name="features" value="أبواب شفط كهربائية ذكية Soft Close Doors" class="w-4 h-4 rounded text-gold focus:ring-0">
+        <span>أبواب شفط كهربائية Soft Close</span>
+      </label>
+
+    </div>
+
+    <!-- Additional Custom Specs -->
+    <div class="mt-5">
+      <label class="block text-xs font-bold text-gray-300 mb-1">كماليات ومواصفات إضافية يدوية (اختياري)</label>
+      <input type="text" name="additional_notes" value="{{ vehicle.additional_notes if vehicle else '' }}" placeholder="مثال: فابريكة بالكامل، بطارية 100%، صيانة كاملة بالتوكيل الرسمي، أوراق الفحص الألماني Dekra متاحة" class="w-full bg-deep border border-white/15 focus:border-gold rounded-xl px-4 py-2.5 text-xs text-white outline-none">
+    </div>
+
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 5. DESCRIPTIONS & AUTO-WRITE ASSISTANT                                     -->
+  <!-- ========================================================================= -->
+  <div class="glass-card rounded-3xl p-6 sm:p-8 border border-white/15">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="text-base font-bold text-gold uppercase tracking-wider flex items-center gap-2">
+        <i class="fas fa-file-alt"></i>
+        <span>5. وصف السيارة المعروضة</span>
+      </h3>
+
+      <!-- 1-Click Auto-Write Button -->
+      <button type="button" id="autoWriteDescBtn" class="bg-gold/15 hover:bg-gold text-gold hover:text-black border border-gold/40 px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5">
+        <i class="fas fa-magic"></i>
+        <span>توليد وصف فاخر تلقائياً</span>
+      </button>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Arabic Description -->
+      <div>
+        <label class="block text-xs font-bold text-gray-200 mb-1">الوصف التفصيلي باللغة العربية</label>
+        <textarea id="carDescAr" name="description_ar" rows="4" placeholder="اكتب وصفاً للسيارة وحالة الفحص، أو اضغط على زر توليد الوصف التلقائي بالأعلى..." class="w-full bg-deep border border-white/15 focus:border-gold rounded-xl p-3 text-xs text-white outline-none leading-relaxed">{{ vehicle.description_ar if vehicle else '' }}</textarea>
+      </div>
+
+      <!-- English Description -->
+      <div>
+        <label class="block text-xs font-bold text-gray-400 mb-1">الوصف بالإنجليزية (اختياري)</label>
+        <textarea name="description_en" rows="4" placeholder="Detailed vehicle overview (optional)..." class="w-full bg-deep border border-white/15 focus:border-gold rounded-xl p-3 text-xs text-white outline-none leading-relaxed" dir="ltr">{{ vehicle.description_en if vehicle else '' }}</textarea>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- SUBMISSION BAR                                                            -->
+  <!-- ========================================================================= -->
+  <div class="p-6 glass-panel rounded-3xl border border-gold/40 flex flex-col sm:flex-row items-center justify-between gap-4 sticky bottom-4 z-20 shadow-2xl">
+    <div class="text-xs text-gray-300">
+      <span class="text-gold font-bold"><i class="fas fa-shield-alt mr-1"></i> جاهز للحفظ:</span>
+      <span>ستتم إضافة السيارة مباشرة للمعرض أو حفظها بحسب الحالة المختارة.</span>
+    </div>
+
+    <div class="flex items-center gap-3 w-full sm:w-auto">
+      <a href="/admin/dashboard" class="flex-1 sm:flex-none text-center bg-white/10 hover:bg-white/20 text-gray-300 px-6 py-3 rounded-xl text-xs font-bold transition">
+        إلغاء
+      </a>
+      
+      <button type="submit" class="flex-1 sm:flex-none gold-btn px-8 py-3 rounded-xl text-xs font-black flex items-center justify-center gap-2 shadow-xl hover:scale-105 transition transform">
+        <i class="fas fa-save text-sm"></i>
+        <span>{% if action == 'create' %}حفظ وإضافة السيارة للمعرض فوراً{% else %}حفظ التعديلات والتحديثات{% endif %}</span>
+      </button>
+    </div>
+  </div>
+
+</form>
+
+<script>
+  // 1-Click Auto-Write Description Assistant
+  document.getElementById("autoWriteDescBtn")?.addEventListener("click", function() {
+    const brand = document.getElementById("carBrand")?.value.trim() || "السيارة";
+    const model = document.getElementById("carModel")?.value.trim() || "";
+    const year = document.getElementById("carYear")?.value.trim() || "2024";
+    const originSelect = document.getElementById("carOrigin");
+    const origin = originSelect ? originSelect.options[originSelect.selectedIndex].text : "ألمانيا";
+
+    const generated = `سيارة ${brand} ${model} موديل ${year}، وارد ${origin}، فابريكة بالكامل بحالة الزيرو بدون أي ملاحظات أو رش نهائياً.\n\nتتميز السيارة بأعلى باقة مواصفات وتجهيزات فاخرة، مع صالون راقٍ وشاشة متطورة وكماليات أصلية بالكامل. خضعت لفحص فني شامل ومعتمدة من صالة عرض سيارتك مع تسليم كافة مستندات الفحص وشهادات الاستيراد الرسمية.`;
+
+    const descArea = document.getElementById("carDescAr");
+    if (descArea) {
+      descArea.value = generated;
+      descArea.focus();
+    }
+  });
+</script>
+
+{% endblock %}

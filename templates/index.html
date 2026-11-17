@@ -1,0 +1,672 @@
+{% extends "base.html" %}
+
+{% block title %}
+  {% if lang == 'ar' %}Syartk | صالة استيراد السيارات الفاخرة إلى مصر{% else %}Syartk | Exclusive Imported Automobiles Showroom Egypt{% endif %}
+{% endblock %}
+
+{% block content %}
+
+<!-- CINEMATIC HERO SECTION -->
+<section class="relative min-h-[90vh] flex items-center justify-center overflow-hidden border-b border-white/10">
+  <!-- Dark cinematic background with subtle gradient overlay -->
+  <div class="absolute inset-0 z-0 bg-cover bg-center filter brightness-[0.38] contrast-[1.1] scale-105 transform animate-pulse duration-1000" style="background-image: url('https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=2000&q=85');"></div>
+  <div class="absolute inset-0 bg-gradient-to-t from-deep via-deep/70 to-transparent z-10"></div>
+  <div class="absolute inset-0 bg-gradient-to-r from-deep via-transparent to-deep z-10"></div>
+
+  <!-- Hero Content Container -->
+  <div class="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 flex flex-col items-center text-center">
+    
+    <!-- Premium Badge -->
+    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-gold/30 backdrop-blur-md text-xs font-semibold text-gold mb-6 shadow-xl">
+      <span class="w-2 h-2 rounded-full bg-gold animate-ping"></span>
+      {% if lang == 'ar' %}
+        صالة العرض الحصرية لاستيراد السيارات من ألمانيا، كوريا، والإمارات
+      {% else %}
+        Exclusive Luxury Vehicle Importer from Germany, Korea & UAE to Egypt
+      {% endif %}
+    </div>
+
+    <!-- Main Headline -->
+    <h1 class="text-4xl sm:text-6xl lg:text-7xl font-black text-white tracking-tight leading-tight max-w-5xl mb-6">
+      {% if lang == 'ar' %}
+        امتلك سيارة أحلامك العالمية <br>
+        <span class="gold-gradient-text">بفحص الفابريكة وضمان التخليص الجمركي</span>
+      {% else %}
+        Import Your Dream Automobile <br>
+        <span class="gold-gradient-text">Factory Pristine & Direct Egypt Customs Clearance</span>
+      {% endif %}
+    </h1>
+
+    <!-- Subtitle -->
+    <p class="text-base sm:text-lg text-gray-300 max-w-3xl mb-10 leading-relaxed font-normal">
+      {% if lang == 'ar' %}
+        منصة SYARTK الخاصة تقدم لك أرقى السيارات الألمانية والكورية والخليجية بحالة الزيرو، مع تقارير فحص دقيقة وتتبع مباشر لخطوات الشحن والتخليص حتى باب منزلك في مصر.
+      {% else %}
+        SYARTK provides hand-picked German, Korean, and GCC luxury vehicles with verified inspection reports, end-to-end maritime freight, and live tracking to your doorstep in Egypt.
+      {% endif %}
+    </p>
+
+    <!-- SEARCH & FILTER CONSOLE -->
+    <div class="w-full max-w-5xl glass-panel p-4 sm:p-6 rounded-2xl shadow-2xl border border-white/15">
+      <form action="/vehicles" method="GET" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-start">
+        
+        <!-- Brand Selector -->
+        <div>
+          <label class="block text-xs font-bold text-gray-300 mb-1.5">
+            <i class="fas fa-car text-gold mr-1"></i>
+            {% if lang == 'ar' %}الماركة العالمية{% else %}Select Brand{% endif %}
+          </label>
+          <select name="brand" class="w-full bg-black/60 border border-white/15 rounded-lg px-3 py-2.5 text-xs text-white focus:border-gold outline-none">
+            <option value="">{% if lang == 'ar' %}كل الماركات (All Brands){% else %}All Brands{% endif %}</option>
+            <option value="Mercedes-Benz">Mercedes-Benz (مرسيدس)</option>
+            <option value="BMW">BMW (بي إم دابليو)</option>
+            <option value="Porsche">Porsche (بورشه)</option>
+            <option value="Hyundai">Hyundai (هيونداي)</option>
+            <option value="Kia">Kia (كيا)</option>
+            <option value="Land Rover">Land Rover (لاند روفر)</option>
+            <option value="Genesis">Genesis (جينيسيس)</option>
+            <option value="Audi">Audi (أودي)</option>
+          </select>
+        </div>
+
+        <!-- Origin Country -->
+        <div>
+          <label class="block text-xs font-bold text-gray-300 mb-1.5">
+            <i class="fas fa-globe-americas text-gold mr-1"></i>
+            {% if lang == 'ar' %}بلد الاستيراد{% else %}Import Origin{% endif %}
+          </label>
+          <select name="origin" class="w-full bg-black/60 border border-white/15 rounded-lg px-3 py-2.5 text-xs text-white focus:border-gold outline-none">
+            <option value="">{% if lang == 'ar' %}جميع دول الاستيراد{% else %}All Origins{% endif %}</option>
+            <option value="Germany">🇩🇪 ألمانيا (Germany)</option>
+            <option value="Korea">🇰🇷 كوريا الجنوبية (South Korea)</option>
+            <option value="UAE">🇦🇪 الإمارات (Gulf Specs)</option>
+            <option value="USA">🇺🇸 أمريكا (USA)</option>
+          </select>
+        </div>
+
+        <!-- Budget Range -->
+        <div>
+          <label class="block text-xs font-bold text-gray-300 mb-1.5">
+            <i class="fas fa-coins text-gold mr-1"></i>
+            {% if lang == 'ar' %}الميزانية التقديرية (ج.م){% else %}Budget Range (EGP){% endif %}
+          </label>
+          <select name="budget" class="w-full bg-black/60 border border-white/15 rounded-lg px-3 py-2.5 text-xs text-white focus:border-gold outline-none">
+            <option value="">{% if lang == 'ar' %}جميع الأسعار{% else %}All Budgets{% endif %}</option>
+            <option value="under_3m">{% if lang == 'ar' %}أقل من 3 مليون ج.م{% else %}Under 3M EGP{% endif %}</option>
+            <option value="3m_6m">3 - 6 {% if lang == 'ar' %}مليون ج.م{% else %}Million EGP{% endif %}</option>
+            <option value="6m_10m">6 - 10 {% if lang == 'ar' %}مليون ج.م{% else %}Million EGP{% endif %}</option>
+            <option value="above_10m">{% if lang == 'ar' %}فوق 10 مليون ج.م (Luxury & Supercars){% else %}Above 10M EGP (Supercars){% endif %}</option>
+          </select>
+        </div>
+
+        <!-- Search Action Button -->
+        <div class="flex items-end">
+          <button type="submit" class="w-full gold-btn py-2.5 px-4 rounded-lg text-xs font-bold flex items-center justify-center gap-2 h-[38px]">
+            <i class="fas fa-search"></i>
+            <span>{% if lang == 'ar' %}استعراض السيارات المتاحة{% else %}Search Fleet{% endif %}</span>
+          </button>
+        </div>
+
+      </form>
+    </div>
+
+    <!-- Quick Tracking Jump Bar -->
+    <div class="mt-6 flex flex-wrap items-center justify-center gap-3 text-xs text-gray-400">
+      <span>{% if lang == 'ar' %}لديك حجز سابق بالفعل؟{% else %}Already have an active booking?{% endif %}</span>
+      <form action="/tracking" method="GET" class="inline-flex items-center gap-1.5 bg-black/40 border border-white/15 rounded-full px-3 py-1">
+        <input type="text" name="code" placeholder="{% if lang == 'ar' %}أدخل كود الحجز مثل SYR-2026-7842{% else %}Enter Code e.g. SYR-2026-7842{% endif %}" class="bg-transparent border-none text-xs text-white focus:outline-none w-48 font-mono">
+        <button type="submit" class="text-gold hover:text-white font-bold text-xs"><i class="fas fa-arrow-left {% if lang == 'en' %}rotate-180{% endif %}"></i></button>
+      </form>
+    </div>
+
+  </div>
+</section>
+
+<!-- TRUST & VALUE PROPOSITIONS STRIP -->
+<section class="py-8 bg-black/40 border-b border-white/5">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+    <div class="flex flex-col items-center">
+      <div class="w-12 h-12 rounded-xl bg-gold/10 border border-gold/30 flex items-center justify-center text-gold text-xl mb-2">
+        <i class="fas fa-award"></i>
+      </div>
+      <h4 class="text-white font-bold text-sm">{% if lang == 'ar' %}فحص شامل معتمد 100%{% else %}100% Certified Inspection{% endif %}</h4>
+      <p class="text-gray-400 text-xs mt-1">{% if lang == 'ar' %}تقارير Dekra و K-Car بفيديو فحص كامل{% else %}Certified Dekra & K-Car video reports{% endif %}</p>
+    </div>
+
+    <div class="flex flex-col items-center">
+      <div class="w-12 h-12 rounded-xl bg-gold/10 border border-gold/30 flex items-center justify-center text-gold text-xl mb-2">
+        <i class="fas fa-file-invoice-dollar"></i>
+      </div>
+      <h4 class="text-white font-bold text-sm">{% if lang == 'ar' %}تخليص جمركي رسمي كامل{% else %}Full Customs Clearance{% endif %}</h4>
+      <p class="text-gray-400 text-xs mt-1">{% if lang == 'ar' %}إجراءات قانونية موثقة واستخراج الإفراج{% else %}Official release certificates & Euro 1{% endif %}</p>
+    </div>
+
+    <div class="flex flex-col items-center">
+      <div class="w-12 h-12 rounded-xl bg-gold/10 border border-gold/30 flex items-center justify-center text-gold text-xl mb-2">
+        <i class="fas fa-satellite-dish"></i>
+      </div>
+      <h4 class="text-white font-bold text-sm">{% if lang == 'ar' %}تتبع رحلة السيارة لحظياً{% else %}Real-Time Journey Tracking{% endif %}</h4>
+      <p class="text-gray-400 text-xs mt-1">{% if lang == 'ar' %}9 مراحل واضحة بالصور من الميناء لبابك{% else %}9 verified stages with photo proof{% endif %}</p>
+    </div>
+
+    <div class="flex flex-col items-center">
+      <div class="w-12 h-12 rounded-xl bg-gold/10 border border-gold/30 flex items-center justify-center text-gold text-xl mb-2">
+        <i class="fas fa-handshake"></i>
+      </div>
+      <h4 class="text-white font-bold text-sm">{% if lang == 'ar' %}تعامل مباشر مع المالك فقط{% else %}Direct Owner Concierge{% endif %}</h4>
+      <p class="text-gray-400 text-xs mt-1">{% if lang == 'ar' %}لا وسطاء ولا عمولات خفية{% else %}No middlemen or hidden markups{% endif %}</p>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURED VEHICLES SECTION -->
+<section class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
+    <div>
+      <span class="text-xs uppercase font-bold text-gold tracking-widest">
+        {% if lang == 'ar' %}المجموعة المختارة الفاخرة{% else %}Curated Premium Fleet{% endif %}
+      </span>
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-white mt-1">
+        {% if lang == 'ar' %}السيارات المميزة المتاحة للشحن الفوري{% else %}Featured Vehicles Ready for Immediate Shipping{% endif %}
+      </h2>
+    </div>
+    <a href="/vehicles" class="outline-gold-btn px-5 py-2.5 rounded-lg text-xs font-bold inline-flex items-center gap-2 self-start md:self-auto">
+      <span>{% if lang == 'ar' %}مشاهدة المعرض بالكامل{% else %}Explore Entire Showcase{% endif %}</span>
+      <i class="fas fa-arrow-left {% if lang == 'en' %}rotate-180{% endif %}"></i>
+    </a>
+  </div>
+
+  <!-- Vehicles Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    {% for car in featured_vehicles %}
+    <div class="glass-card rounded-2xl overflow-hidden flex flex-col group">
+      
+      <!-- Image & Badges Container -->
+      <div class="car-card-img-container aspect-[16/10] bg-black relative">
+        <img src="{{ car.cover_image or '/static/images/car-placeholder.jpg' }}" alt="{{ car.brand }} {{ car.model }}" class="w-full h-full object-cover">
+        <div class="absolute inset-0 bg-gradient-to-t from-deep via-transparent to-black/30"></div>
+
+        <!-- Status & Origin Badges -->
+        <div class="absolute top-3 right-3 flex flex-col gap-1.5 items-end">
+          <span class="badge-origin px-2.5 py-1 rounded-md text-[11px] font-bold">
+            {{ car.country_of_origin | flag }}
+          </span>
+          {% if car.status == 'available' %}
+            <span class="badge-available px-2.5 py-0.5 rounded text-[10px] font-bold">
+              {% if lang == 'ar' %}متاح للحجز{% else %}Available{% endif %}
+            </span>
+          {% elif car.status == 'reserved' %}
+            <span class="badge-reserved px-2.5 py-0.5 rounded text-[10px] font-bold">
+              {% if lang == 'ar' %}محجوز مؤقتاً{% else %}Reserved{% endif %}
+            </span>
+          {% elif car.status == 'sold' %}
+            <span class="badge-sold px-2.5 py-0.5 rounded text-[10px] font-bold">
+              {% if lang == 'ar' %}تم البيع{% else %}Sold Out{% endif %}
+            </span>
+          {% endif %}
+        </div>
+
+        {% if car.is_special_offer %}
+        <div class="absolute top-3 left-3 bg-red-600/90 text-white font-bold text-[10px] px-2.5 py-1 rounded uppercase tracking-wider shadow">
+          {% if lang == 'ar' %}عرض خاص{% else %}Special Offer{% endif %}
+        </div>
+        {% endif %}
+
+        <!-- Expected Delivery Tag -->
+        <div class="absolute bottom-3 right-3 text-white/90 text-[11px] bg-black/60 backdrop-blur-md px-2.5 py-1 rounded flex items-center gap-1.5">
+          <i class="fas fa-clock text-gold"></i>
+          <span>{{ car.expected_delivery_time }}</span>
+        </div>
+      </div>
+
+      <!-- Card Details -->
+      <div class="p-6 flex-1 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between text-xs text-gray-400 mb-1">
+            <span class="font-bold text-gold uppercase tracking-wider">{{ car.brand }}</span>
+            <span class="font-mono">{{ car.year }}</span>
+          </div>
+
+          <h3 class="text-xl font-bold text-white group-hover:text-gold transition">
+            <a href="/vehicle/{{ car.slug }}">{{ car.brand }} {{ car.model }}</a>
+          </h3>
+          <p class="text-xs text-gray-400 mt-1 mb-4">{{ car.trim }}</p>
+
+          <!-- Key Specs Grid -->
+          <div class="grid grid-cols-2 gap-2 py-3 border-y border-white/10 text-xs text-gray-300 mb-4">
+            <div class="flex items-center gap-1.5">
+              <i class="fas fa-tachometer-alt text-gold text-xs"></i>
+              <span>{{ car.mileage | number }} {% if lang == 'ar' %}كم{% else %}km{% endif %}</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <i class="fas fa-cogs text-gold text-xs"></i>
+              <span class="truncate">{{ car.transmission }}</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <i class="fas fa-gas-pump text-gold text-xs"></i>
+              <span class="truncate">{{ car.fuel_type }}</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <i class="fas fa-shield-check text-emerald-400 text-xs"></i>
+              <span class="truncate">{% if lang == 'ar' %}فابريكة بالكامل{% else %}Pristine{% endif %}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pricing & CTAs -->
+        <div>
+          <div class="flex items-baseline justify-between mb-4">
+            <div>
+              <span class="text-[10px] text-gray-400 block uppercase">{% if lang == 'ar' %}السعر الإجمالي في مصر{% else %}Total Price in Egypt{% endif %}</span>
+              <span class="text-2xl font-black text-white font-mono">{{ car.selling_price_egp | currency(lang) }}</span>
+            </div>
+            {% if car.reservation_deposit_egp > 0 %}
+            <div class="text-end">
+              <span class="text-[10px] text-gray-400 block">{% if lang == 'ar' %}عربون الجدية{% else %}Deposit{% endif %}</span>
+              <span class="text-xs font-bold text-gold font-mono">{{ car.reservation_deposit_egp | currency(lang) }}</span>
+            </div>
+            {% endif %}
+          </div>
+
+          <!-- Buttons -->
+          <div class="flex items-center gap-2">
+            <a href="/vehicle/{{ car.slug }}" class="flex-1 text-center bg-white/10 hover:bg-white/20 text-white font-bold py-2.5 px-3 rounded-lg text-xs transition">
+              {% if lang == 'ar' %}التفاصيل والفحص{% else %}Full Details{% endif %}
+            </a>
+
+            {% if car.status == 'available' and car.units_available > 0 %}
+            <button type="button" class="btn-open-reserve flex-1 gold-btn py-2.5 px-3 rounded-lg text-xs font-bold text-center"
+                    data-vehicle-id="{{ car.id }}"
+                    data-vehicle-title="{{ car.brand }} {{ car.model }} {{ car.year }}"
+                    data-vehicle-price="{{ car.selling_price_egp | currency(lang) }}"
+                    data-vehicle-deposit="{{ car.reservation_deposit_egp | currency(lang) }}">
+              {% if lang == 'ar' %}احجز الآن{% else %}Reserve{% endif %}
+            </button>
+            {% else %}
+            <a href="https://wa.me/{{ settings.whatsapp_number }}?text=طلب توفير سيارة مماثلة: {{ car.brand }} {{ car.model }}" target="_blank" class="flex-1 text-center bg-gray-800 text-gray-400 py-2.5 px-3 rounded-lg text-xs">
+              {% if lang == 'ar' %}طلب توفير مماثل{% else %}Request Similar{% endif %}
+            </a>
+            {% endif %}
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- BROWSE BY BRAND & BROWSE BY ORIGIN -->
+<section class="py-16 bg-charcoal/60 border-y border-white/5">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center max-w-2xl mx-auto mb-12">
+      <span class="text-xs uppercase font-bold text-gold tracking-widest">
+        {% if lang == 'ar' %}الوكالات والماركات المعتمدة{% else %}Certified Prestigious Marques{% endif %}
+      </span>
+      <h2 class="text-2xl sm:text-3xl font-extrabold text-white mt-1">
+        {% if lang == 'ar' %}تصفح سياراتك المفضلة حسب الماركة أو بلد المنشأ{% else %}Browse by Automaker or Import Origin{% endif %}
+      </h2>
+    </div>
+
+    <!-- Country of Origin Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+      
+      <!-- Germany -->
+      <a href="/vehicles?origin=Germany" class="glass-card p-6 rounded-2xl flex flex-col items-center text-center group hover:border-gold">
+        <span class="text-4xl mb-3">🇩🇪</span>
+        <h3 class="text-lg font-bold text-white group-hover:text-gold transition">{% if lang == 'ar' %}وارد ألمانيا{% else %}German Imports{% endif %}</h3>
+        <p class="text-xs text-gray-400 mt-1">{% if lang == 'ar' %}مرسيدس، بورشه، بي إم دابليو، أودي مع شهادة يورو 1{% else %}Mercedes, Porsche, BMW, Audi with Euro 1{% endif %}</p>
+        <span class="mt-4 text-xs font-bold text-gold flex items-center gap-1">
+          {% if lang == 'ar' %}استكشف السيارات{% else %}View Cars{% endif %} <i class="fas fa-arrow-left text-[10px] {% if lang == 'en' %}rotate-180{% endif %}"></i>
+        </span>
+      </a>
+
+      <!-- South Korea -->
+      <a href="/vehicles?origin=Korea" class="glass-card p-6 rounded-2xl flex flex-col items-center text-center group hover:border-gold">
+        <span class="text-4xl mb-3">🇰🇷</span>
+        <h3 class="text-lg font-bold text-white group-hover:text-gold transition">{% if lang == 'ar' %}وارد كوريا الجنوبية{% else %}South Korea Imports{% endif %}</h3>
+        <p class="text-xs text-gray-400 mt-1">{% if lang == 'ar' %}هيونداي، كيا، جينيسيس بأعلى الفئات وأقل استهلاك وقود{% else %}Hyundai, Kia, Genesis top trims directly from Seoul{% endif %}</p>
+        <span class="mt-4 text-xs font-bold text-gold flex items-center gap-1">
+          {% if lang == 'ar' %}استكشف السيارات{% else %}View Cars{% endif %} <i class="fas fa-arrow-left text-[10px] {% if lang == 'en' %}rotate-180{% endif %}"></i>
+        </span>
+      </a>
+
+      <!-- UAE / Gulf Specs -->
+      <a href="/vehicles?origin=UAE" class="glass-card p-6 rounded-2xl flex flex-col items-center text-center group hover:border-gold">
+        <span class="text-4xl mb-3">🇦🇪</span>
+        <h3 class="text-lg font-bold text-white group-hover:text-gold transition">{% if lang == 'ar' %}مواصفات خليجية (الإمارات){% else %}Gulf Specs (UAE){% endif %}</h3>
+        <p class="text-xs text-gray-400 mt-1">{% if lang == 'ar' %}رينج روفر، تويوتا، لاند كروزر شحن سريع 10 أيام فقط{% else %}Range Rover, Land Cruiser with fast 10-day sea freight{% endif %}</p>
+        <span class="mt-4 text-xs font-bold text-gold flex items-center gap-1">
+          {% if lang == 'ar' %}استكشف السيارات{% else %}View Cars{% endif %} <i class="fas fa-arrow-left text-[10px] {% if lang == 'en' %}rotate-180{% endif %}"></i>
+        </span>
+      </a>
+
+      <!-- USA Specs -->
+      <a href="/vehicles?origin=USA" class="glass-card p-6 rounded-2xl flex flex-col items-center text-center group hover:border-gold">
+        <span class="text-4xl mb-3">🇺🇸</span>
+        <h3 class="text-lg font-bold text-white group-hover:text-gold transition">{% if lang == 'ar' %}وارد أمريكا{% else %}USA Clean Title{% endif %}</h3>
+        <p class="text-xs text-gray-400 mt-1">{% if lang == 'ar' %}سيارات كلين تايتل Clean CarFax وفحص شامل{% else %}Clean title, CarFax verified luxury SUVs{% endif %}</p>
+        <span class="mt-4 text-xs font-bold text-gold flex items-center gap-1">
+          {% if lang == 'ar' %}استكشف السيارات{% else %}View Cars{% endif %} <i class="fas fa-arrow-left text-[10px] {% if lang == 'en' %}rotate-180{% endif %}"></i>
+        </span>
+      </a>
+
+    </div>
+
+    <!-- Brands Grid Bar -->
+    <div class="flex flex-wrap items-center justify-center gap-3">
+      {% for b in brands %}
+      <a href="/vehicles?brand={{ b.brand }}" class="px-5 py-2.5 rounded-xl bg-white/5 hover:bg-gold/15 border border-white/10 hover:border-gold transition flex items-center gap-2 text-sm text-gray-200">
+        <i class="fas fa-car text-gold text-xs"></i>
+        <span class="font-bold">{{ b.brand }}</span>
+        <span class="text-xs text-gray-400 font-mono">({{ b.count }})</span>
+      </a>
+      {% endfor %}
+    </div>
+
+  </div>
+</section>
+
+<!-- BROWSE BY BUDGET SECTION -->
+<section class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <div class="text-center max-w-2xl mx-auto mb-10">
+    <span class="text-xs uppercase font-bold text-gold tracking-widest">
+      {% if lang == 'ar' %}تصفح ذكي حسب الميزانية{% else %}Smart Budget Explorer{% endif %}
+    </span>
+    <h2 class="text-2xl sm:text-3xl font-extrabold text-white mt-1">
+      {% if lang == 'ar' %}اختر الفئة السعرية المناسبة لاستثمارك{% else %}Select Price Category For Your Purchase{% endif %}
+    </h2>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    <a href="/vehicles?budget=under_3m" class="glass-card p-6 rounded-2xl border border-white/10 hover:border-gold transition text-center group">
+      <div class="text-xs uppercase text-gray-400 mb-1">{% if lang == 'ar' %}الفئة الاقتصادية والكروس أوفر{% else %}Crossover & SUV Tier{% endif %}</div>
+      <div class="text-xl font-black text-white font-mono group-hover:text-gold transition">
+        {% if lang == 'ar' %}أقل من 3 مليون ج.م{% else %}Under 3M EGP{% endif %}
+      </div>
+      <p class="text-xs text-gray-400 mt-2">{% if lang == 'ar' %}توسان N-Line، سبورتاج، سورينتو هايبرد{% else %}Tucson N-Line, Sportage, Sorento HEV{% endif %}</p>
+    </a>
+
+    <a href="/vehicles?budget=3m_6m" class="glass-card p-6 rounded-2xl border border-white/10 hover:border-gold transition text-center group">
+      <div class="text-xs uppercase text-gray-400 mb-1">{% if lang == 'ar' %}الفئة التنفيذية الفاخرة{% else %}Executive Luxury Tier{% endif %}</div>
+      <div class="text-xl font-black text-white font-mono group-hover:text-gold transition">
+        3 - 6 {% if lang == 'ar' %}مليون ج.م{% else %}Million EGP{% endif %}
+      </div>
+      <p class="text-xs text-gray-400 mt-2">{% if lang == 'ar' %}جينيسيس GV80، مرسيدس E-Class، BMW 5 Series{% else %}Genesis GV80, Mercedes E-Class, BMW 5{% endif %}</p>
+    </a>
+
+    <a href="/vehicles?budget=6m_10m" class="glass-card p-6 rounded-2xl border border-white/10 hover:border-gold transition text-center group">
+      <div class="text-xs uppercase text-gray-400 mb-1">{% if lang == 'ar' %}الفئة البريميوم العليا{% else %}High Premium SAV Tier{% endif %}</div>
+      <div class="text-xl font-black text-white font-mono group-hover:text-gold transition">
+        6 - 10 {% if lang == 'ar' %}مليون ج.م{% else %}Million EGP{% endif %}
+      </div>
+      <p class="text-xs text-gray-400 mt-2">{% if lang == 'ar' %}BMW X7 M60i، بورشه 911 كاريرا، كايين كوبر{% else %}BMW X7 M60i, Porsche 911 4S, Cayenne{% endif %}</p>
+    </a>
+
+    <a href="/vehicles?budget=above_10m" class="glass-card p-6 rounded-2xl border border-white/10 hover:border-gold transition text-center group">
+      <div class="text-xs uppercase text-gray-400 mb-1">{% if lang == 'ar' %}سوبر كار وأيقونات الطرق{% else %}Supercars & Flagships{% endif %}</div>
+      <div class="text-xl font-black text-gold font-mono group-hover:scale-105 transition transform">
+        {% if lang == 'ar' %}10+ مليون ج.م{% else %}10M+ EGP Luxury{% endif %}
+      </div>
+      <p class="text-xs text-gray-400 mt-2">{% if lang == 'ar' %}مرسيدس G63 AMG، أودي RS Q8، رينج روفر فوج{% else %}Mercedes G63 AMG, Audi RS Q8, Range Rover{% endif %}</p>
+    </a>
+  </div>
+</section>
+
+<!-- HOW THE IMPORTING PROCESS WORKS (STEP BY STEP) -->
+<section class="py-20 bg-charcoal/40 border-t border-white/5 relative">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center max-w-3xl mx-auto mb-16">
+      <span class="text-xs uppercase font-bold text-gold tracking-widest">
+        {% if lang == 'ar' %}رحلة استيراد موثوقة ومضمونة{% else %}Transparent 5-Step Process{% endif %}
+      </span>
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-white mt-1">
+        {% if lang == 'ar' %}كيف تتم عملية الاستيراد من الخارج إلى مصر مع Syartk؟{% else %}How The Vehicle Importing Process Works with Syartk{% endif %}
+      </h2>
+      <p class="text-gray-400 text-sm mt-3">
+        {% if lang == 'ar' %}
+          نتولى عنك كافة التفاصيل الدقيقة: من فحص الصالة في أوروبا وكوريا، وحتى الشحن البحري المؤمن والإفراج الجمركي والترخيص في مصر.
+        {% else %}
+          We handle every detail: showroom inspection overseas, maritime freight, customs duties release, and Egyptian licensing.
+        {% endif %}
+      </p>
+    </div>
+
+    <!-- 5 Process Steps -->
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-6 relative">
+      
+      <!-- Step 1 -->
+      <div class="glass-card p-6 rounded-2xl flex flex-col items-center text-center relative group">
+        <div class="w-12 h-12 rounded-full bg-gold text-black font-black flex items-center justify-center text-lg mb-4 shadow-lg shadow-gold/20">
+          1
+        </div>
+        <h4 class="text-white font-bold text-sm mb-2">{% if lang == 'ar' %}الاختيار وحجز السيارة{% else %}Select & Reserve{% endif %}</h4>
+        <p class="text-gray-400 text-xs leading-relaxed">
+          {% if lang == 'ar' %}
+            اختيار السيارة المناسبة من المعرض وتقديم طلب الحجز مع تحديد متطلباتك بدقة.
+          {% else %}
+            Choose your vehicle from the showroom and submit initial reservation details.
+          {% endif %}
+        </p>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="glass-card p-6 rounded-2xl flex flex-col items-center text-center relative group">
+        <div class="w-12 h-12 rounded-full bg-gold text-black font-black flex items-center justify-center text-lg mb-4 shadow-lg shadow-gold/20">
+          2
+        </div>
+        <h4 class="text-white font-bold text-sm mb-2">{% if lang == 'ar' %}الفحص الفني الدقيق بالخارج{% else %}Overseas Inspection{% endif %}</h4>
+        <p class="text-gray-400 text-xs leading-relaxed">
+          {% if lang == 'ar' %}
+            إجراء فحص Dekra أو K-Car الشامل (111 نقطة فحص) وتوثيق فيديو عالي الدقة للشاسيه والطلاء.
+          {% else %}
+            Official Dekra/K-Car technical inspection with 4K video of motor and bodywork.
+          {% endif %}
+        </p>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="glass-card p-6 rounded-2xl flex flex-col items-center text-center relative group">
+        <div class="w-12 h-12 rounded-full bg-gold text-black font-black flex items-center justify-center text-lg mb-4 shadow-lg shadow-gold/20">
+          3
+        </div>
+        <h4 class="text-white font-bold text-sm mb-2">{% if lang == 'ar' %}الشحن الدولي البحري{% else %}Maritime Shipping{% endif %}</h4>
+        <p class="text-gray-400 text-xs leading-relaxed">
+          {% if lang == 'ar' %}
+            تثبيت السيارة في حاوية بحرية مخصصة ومؤمنة بالكامل وانطلاق الشحنة إلى ميناء الإسكندرية.
+          {% else %}
+            Loading into dedicated marine containers with full transit insurance to Alexandria Port.
+          {% endif %}
+        </p>
+      </div>
+
+      <!-- Step 4 -->
+      <div class="glass-card p-6 rounded-2xl flex flex-col items-center text-center relative group">
+        <div class="w-12 h-12 rounded-full bg-gold text-black font-black flex items-center justify-center text-lg mb-4 shadow-lg shadow-gold/20">
+          4
+        </div>
+        <h4 class="text-white font-bold text-sm mb-2">{% if lang == 'ar' %}التخليص الجمركي في مصر{% else %}Customs Clearance{% endif %}</h4>
+        <p class="text-gray-400 text-xs leading-relaxed">
+          {% if lang == 'ar' %}
+            إنهاء الفحص الجمركي والتثمين وسداد الرسوم واستخراج إذن الإفراج الرسمي باسم العميل.
+          {% else %}
+            Egyptian port inspection, duty settlement, and official release authorization.
+          {% endif %}
+        </p>
+      </div>
+
+      <!-- Step 5 -->
+      <div class="glass-card p-6 rounded-2xl flex flex-col items-center text-center relative group">
+        <div class="w-12 h-12 rounded-full bg-emerald-500 text-black font-black flex items-center justify-center text-lg mb-4 shadow-lg shadow-emerald-500/20">
+          5
+        </div>
+        <h4 class="text-white font-bold text-sm mb-2">{% if lang == 'ar' %}التسليم والترخيص{% else %}Handover & Plates{% endif %}</h4>
+        <p class="text-gray-400 text-xs leading-relaxed">
+          {% if lang == 'ar' %}
+            استلام السيارة في صالة عرض Syartk بمدينة العبور - القاهرة أو توصيلها حتى باب منزلك مع كافة المستندات الأصلية.
+          {% else %}
+            Vehicle handover in our El Obour City - Cairo showroom or doorstep delivery with all original documents.
+          {% endif %}
+        </p>
+      </div>
+
+    </div>
+
+    <!-- Live Tracking Callout -->
+    <div class="mt-12 p-6 glass-panel rounded-2xl border border-gold/30 flex flex-col md:flex-row items-center justify-between gap-6">
+      <div class="flex items-center gap-4">
+        <div class="w-14 h-14 rounded-full bg-gold/15 border border-gold flex items-center justify-center text-gold text-2xl flex-shrink-0">
+          <i class="fas fa-map-marked-alt"></i>
+        </div>
+        <div>
+          <h4 class="text-lg font-bold text-white">{% if lang == 'ar' %}نظام التتبع المباشر لجميع مراحل الرحلة التسع (9 Stages){% else %}Exclusive 9-Stage Live Journey Tracking System{% endif %}</h4>
+          <p class="text-xs text-gray-400 mt-1">{% if lang == 'ar' %}يمكنك متابعة موقع سيارتك وصور الحاوية وتقارير الموانئ لحظة بلحظة عبر كود التتبع الخاص بك.{% else %}Monitor your vehicle's physical location, container photos, and port clearance with your private reference code.{% endif %}</p>
+        </div>
+      </div>
+      <a href="/tracking" class="gold-btn px-6 py-3 rounded-lg text-xs font-bold whitespace-nowrap">
+        <i class="fas fa-search-location mr-1"></i>
+        {% if lang == 'ar' %}الدخول لصفحة التتبع{% else %}Go to Tracking Portal{% endif %}
+      </a>
+    </div>
+
+  </div>
+</section>
+
+<!-- WHY CHOOSE SYARTK -->
+<section class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+    <div>
+      <span class="text-xs uppercase font-bold text-gold tracking-widest">
+        {% if lang == 'ar' %}لماذا صالة Syartk؟{% else %}Why Choose Syartk?{% endif %}
+      </span>
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-white mt-1 mb-6 leading-tight">
+        {% if lang == 'ar' %}
+          معايير فخامة وأمان استثنائية لا تضاهى في سوق الاستيراد المصري
+        {% else %}
+          Unmatched Luxury Standards & Security in The Egyptian Automotive Market
+        {% endif %}
+      </h2>
+      
+      <div class="space-y-6">
+        <div class="flex items-start gap-4">
+          <div class="w-10 h-10 rounded-lg bg-gold/15 border border-gold/40 flex items-center justify-center text-gold flex-shrink-0 mt-1">
+            <i class="fas fa-check-double"></i>
+          </div>
+          <div>
+            <h4 class="text-white font-bold text-base mb-1">{% if lang == 'ar' %}فابريكة بالكامل دون دهانات أو حوادث{% else %}100% Original Factory Paint & Clean Title{% endif %}</h4>
+            <p class="text-gray-400 text-xs leading-relaxed">{% if lang == 'ar' %}لا نستورد سوى السيارات الخالية تماماً من الحوادث وذات السجل النظيف الموثق في دول المنشأ الأوروبية والكورية.{% else %}We only import immaculate, zero-accident vehicles with verified service history from certified European and Korean dealers.{% endif %}</p>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-4">
+          <div class="w-10 h-10 rounded-lg bg-gold/15 border border-gold/40 flex items-center justify-center text-gold flex-shrink-0 mt-1">
+            <i class="fas fa-shield-alt"></i>
+          </div>
+          <div>
+            <h4 class="text-white font-bold text-base mb-1">{% if lang == 'ar' %}شفافية مطلقة وعقود قانونية ملزمة{% else %}Transparent Pricing & Binding Legal Contracts{% endif %}</h4>
+            <p class="text-gray-400 text-xs leading-relaxed">{% if lang == 'ar' %}الأسعار بالجنيه المصري شاملة الشحن والتأمين البحري وكافة بنود التخليص الجمركي دون أي مفاجآت.{% else %}All prices are quoted in Egyptian Pounds with zero hidden fees, backed by official commercial agreements.{% endif %}</p>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-4">
+          <div class="w-10 h-10 rounded-lg bg-gold/15 border border-gold/40 flex items-center justify-center text-gold flex-shrink-0 mt-1">
+            <i class="fas fa-camera"></i>
+          </div>
+          <div>
+            <h4 class="text-white font-bold text-base mb-1">{% if lang == 'ar' %}أدلة مصورة حقيقية لكل خطوة{% else %}Real Photographic Evidence at Every Milestone{% endif %}</h4>
+            <p class="text-gray-400 text-xs leading-relaxed">{% if lang == 'ar' %}صور فحص الموتور، صور تحميل الحاوية، صور وصول الميناء المصري ترفع لك لحظياً على صفحة تتبعك.{% else %}Inspection photos, container stuffing, and Alexandria port arrival pictures uploaded directly to your tracking dashboard.{% endif %}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Luxury Imagery Showcase -->
+    <div class="relative">
+      <div class="aspect-[4/3] rounded-3xl overflow-hidden border border-white/15 shadow-2xl relative">
+        <img src="https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=1200&q=80" alt="Luxury showroom" class="w-full h-full object-cover">
+        <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+        <div class="absolute bottom-6 right-6 left-6 p-4 glass-panel rounded-xl border border-white/15">
+          <div class="flex items-center justify-between">
+            <div>
+              <span class="text-gold text-xs font-bold uppercase">{% if lang == 'ar' %}صالة عرض Syartk - مدينة العبور، القاهرة{% else %}Syartk Cairo Showroom{% endif %}</span>
+              <p class="text-white text-xs mt-0.5">{{ settings.cairo_showroom_address_ar if lang == 'ar' else settings.cairo_showroom_address_en }}</p>
+            </div>
+            <a href="/contact" class="gold-btn px-3 py-1.5 rounded text-xs font-bold">{% if lang == 'ar' %}زيارة الصالة{% else %}Visit{% endif %}</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CUSTOMER TESTIMONIALS -->
+<section class="py-20 bg-charcoal/60 border-t border-white/5">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center max-w-2xl mx-auto mb-16">
+      <span class="text-xs uppercase font-bold text-gold tracking-widest">
+        {% if lang == 'ar' %}آراء عملاء Syartk في مصر{% else %}Syartk Client Testimonials{% endif %}
+      </span>
+      <h2 class="text-3xl font-extrabold text-white mt-1">
+        {% if lang == 'ar' %}تجارب استيراد حقيقية لسيارات تم تسليمها بنجاح{% else %}Real Import Experiences Delivered to Egyptian Drivers{% endif %}
+      </h2>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      {% for t in testimonials %}
+      <div class="glass-card p-6 rounded-2xl flex flex-col justify-between">
+        <div>
+          <!-- Stars -->
+          <div class="flex items-center gap-1 text-gold text-xs mb-4">
+            {% for i in range(t.rating) %}<i class="fas fa-star"></i>{% endfor %}
+          </div>
+          <!-- Quote -->
+          <p class="text-gray-300 text-xs leading-relaxed italic mb-6">
+            "{{ t.comment_ar if lang == 'ar' else t.comment_en }}"
+          </p>
+        </div>
+
+        <!-- Author -->
+        <div class="flex items-center gap-3 pt-4 border-t border-white/10">
+          <img src="{{ t.avatar_url }}" alt="{{ t.client_name }}" class="w-10 h-10 rounded-full object-cover border border-gold/40">
+          <div>
+            <h4 class="text-white font-bold text-xs">{{ t.client_name }}</h4>
+            <p class="text-[11px] text-gray-400">{{ t.city }}</p>
+            <span class="text-[10px] text-gold font-mono">{{ t.vehicle_purchased }}</span>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- CALL TO ACTION BANNER -->
+<section class="py-20 relative overflow-hidden border-t border-white/10">
+  <div class="max-w-5xl mx-auto px-4 text-center">
+    <div class="w-16 h-16 rounded-2xl bg-gold/15 border border-gold flex items-center justify-center text-gold text-2xl mx-auto mb-6">
+      <i class="fas fa-car"></i>
+    </div>
+    <h2 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight mb-4">
+      {% if lang == 'ar' %}هل تبحث عن مواصفات محددة أو سيارة نادرة؟{% else %}Looking For a Specific Trim or Rare Model?{% endif %}
+    </h2>
+    <p class="text-gray-300 text-sm max-w-2xl mx-auto mb-8 leading-relaxed">
+      {% if lang == 'ar' %}
+        تواصل مباشرة مع مالك صالة Syartk عبر واتساب لطلب استيراد أي سيارة ترغب بها بالمواصفات واللون وسنة الصنع المطلوبة من ألمانيا أو كوريا أو الإمارات.
+      {% else %}
+        Contact the showroom owner directly on WhatsApp to order any bespoke vehicle specification, exterior/interior palette, and model year from Germany, Korea or UAE.
+      {% endif %}
+    </p>
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+      <a href="https://wa.me/{{ settings.whatsapp_number }}?text=مرحباً، أود استشارة المالك حول استيراد سيارة بمواصفات خاصة." target="_blank" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-8 py-3.5 rounded-xl shadow-xl flex items-center justify-center gap-2 text-sm transition">
+        <i class="fab fa-whatsapp text-lg"></i>
+        <span>{% if lang == 'ar' %}استشارة المالك مباشرة عبر واتساب{% else %}Chat With Owner on WhatsApp{% endif %}</span>
+      </a>
+      <a href="/vehicles" class="w-full sm:w-auto outline-gold-btn font-bold px-8 py-3.5 rounded-xl text-sm transition">
+        {% if lang == 'ar' %}تصفح المعرض الكامل{% else %}Browse All Available Vehicles{% endif %}
+      </a>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

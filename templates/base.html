@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="{{ lang }}" dir="{{ 'rtl' if lang == 'ar' else 'ltr' }}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}{{ settings.site_name_ar if lang == 'ar' else settings.site_name_en }}{% endblock %} | Syartk</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            gold: '#C5A880',
+            'gold-light': '#E0CAAA',
+            'gold-dark': '#9A7D56',
+            charcoal: '#0F1117',
+            deep: '#07080A',
+            card: '#14161F'
+          },
+          fontFamily: {
+            sans: ['Cairo', 'Outfit', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="/static/css/style.css">
+  {% block extra_head %}{% endblock %}
+</head>
+<body class="bg-deep text-gray-100 min-h-screen flex flex-col antialiased selection:bg-gold selection:text-black">
+
+  <!-- TOP ANNOUNCEMENT & CONTACT BAR -->
+  <div class="bg-black/60 border-b border-white/5 py-2 px-4 text-xs text-gray-400">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-4">
+        <span class="flex items-center gap-1.5 text-gold">
+          <i class="fas fa-shield-alt"></i>
+          {% if lang == 'ar' %}فحص معتمد 100% وشحن مباشر لمصر{% else %}100% Certified Inspection & Direct Egypt Import{% endif %}
+        </span>
+        <span class="hidden md:inline-block text-white/20">|</span>
+        <span class="hidden md:flex items-center gap-1.5 text-gray-300">
+          <i class="fas fa-map-marker-alt text-gold"></i>
+          {{ settings.cairo_showroom_address_ar if lang == 'ar' else settings.cairo_showroom_address_en }}
+        </span>
+      </div>
+      
+      <div class="flex items-center gap-4">
+        <a href="tel:{{ settings.phone_primary }}" class="hover:text-gold transition flex items-center gap-1.5">
+          <i class="fas fa-phone-alt text-gold"></i>
+          <span dir="ltr">{{ settings.phone_primary }}</span>
+        </a>
+        <span class="text-white/20">|</span>
+        <!-- Language Switcher -->
+        {% if lang == 'ar' %}
+          <a href="/set-lang/en" class="flex items-center gap-1 hover:text-white transition font-bold text-xs bg-white/5 px-2 py-0.5 rounded border border-white/10">
+            <span>English</span>
+            <i class="fas fa-globe text-gold"></i>
+          </a>
+        {% else %}
+          <a href="/set-lang/ar" class="flex items-center gap-1 hover:text-white transition font-bold text-xs bg-white/5 px-2 py-0.5 rounded border border-white/10">
+            <span>العربية</span>
+            <i class="fas fa-globe text-gold"></i>
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN NAVIGATION HEADER -->
+  <header class="sticky top-0 z-50 glass-panel border-b border-white/10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      
+      <!-- LOGO -->
+      <a href="/" class="flex items-center gap-3 group">
+        <img src="/static/images/logo.svg" alt="Syartk" class="h-10 sm:h-11 w-auto transition-transform group-hover:scale-105">
+      </a>
+
+      <!-- DESKTOP NAV -->
+      <nav class="hidden md:flex items-center gap-7 text-sm font-semibold text-gray-300">
+        <a href="/" class="hover:text-gold transition flex items-center gap-1.5 {% if request and request.url.path == '/' %}text-gold font-bold{% endif %}">
+          <i class="fas fa-home text-xs"></i>
+          {% if lang == 'ar' %}الرئيسية{% else %}Home{% endif %}
+        </a>
+        <a href="/vehicles" class="hover:text-gold transition flex items-center gap-1.5 {% if request and request.url.path == '/vehicles' %}text-gold font-bold{% endif %}">
+          <i class="fas fa-car-side text-xs"></i>
+          {% if lang == 'ar' %}معرض السيارات{% else %}Vehicles Showcase{% endif %}
+        </a>
+        <a href="/how-it-works" class="hover:text-gold transition flex items-center gap-1.5 {% if request and request.url.path == '/how-it-works' %}text-gold font-bold{% endif %}">
+          <i class="fas fa-route text-xs"></i>
+          {% if lang == 'ar' %}خطوات الاستيراد{% else %}Import Process{% endif %}
+        </a>
+        <a href="/tracking" class="hover:text-gold transition flex items-center gap-1.5 {% if request and '/tracking' in request.url.path %}text-gold font-bold{% endif %}">
+          <span class="relative flex h-2 w-2 mr-1">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+          </span>
+          {% if lang == 'ar' %}تتبع شحنتك{% else %}Track Vehicle{% endif %}
+        </a>
+        <a href="/contact" class="hover:text-gold transition flex items-center gap-1.5 {% if request and request.url.path == '/contact' %}text-gold font-bold{% endif %}">
+          <i class="fas fa-building text-xs"></i>
+          {% if lang == 'ar' %}صالة العرض{% else %}Showroom & Contact{% endif %}
+        </a>
+      </nav>
+
+      <!-- RIGHT ACTIONS -->
+      <div class="hidden lg:flex items-center gap-3">
+        <!-- Customer Account / Auth -->
+        {% if user %}
+          <div class="flex items-center gap-2">
+            <a href="/profile" class="flex items-center gap-2 bg-white/5 hover:bg-gold/15 text-gold border border-gold/30 px-3 py-2 rounded-lg text-xs font-bold transition">
+              <i class="fas fa-user-circle text-sm"></i>
+              <span>{{ user.name }}</span>
+            </a>
+            <a href="/logout" title="{% if lang == 'ar' %}تسجيل الخروج{% else %}Sign Out{% endif %}" class="text-gray-400 hover:text-rose-400 p-2 transition text-xs">
+              <i class="fas fa-sign-out-alt text-base"></i>
+            </a>
+          </div>
+        {% else %}
+          <div class="flex items-center gap-2">
+            <a href="/login" class="text-gray-300 hover:text-gold font-bold text-xs px-2.5 py-2 transition flex items-center gap-1.5">
+              <i class="fas fa-sign-in-alt text-gold"></i>
+              <span>{% if lang == 'ar' %}دخول{% else %}Sign In{% endif %}</span>
+            </a>
+            <a href="/register" class="gold-btn text-xs px-3.5 py-2 rounded-lg font-bold flex items-center gap-1.5">
+              <i class="fas fa-user-plus"></i>
+              <span>{% if lang == 'ar' %}حساب جديد{% else %}Register{% endif %}</span>
+            </a>
+          </div>
+        {% endif %}
+
+        <!-- WhatsApp CTA -->
+        <a href="https://wa.me/{{ settings.whatsapp_number }}?text={% if lang == 'ar' %}مرحباً Syartk، أرغب في الاستفسار عن حجز سيارة مستوردة.{% else %}Hello Syartk, I would like to inquire about importing a vehicle.{% endif %}" target="_blank" class="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-3.5 py-2 rounded-lg shadow-lg shadow-emerald-900/30 transition">
+          <i class="fab fa-whatsapp text-base"></i>
+          <span>{% if lang == 'ar' %}واتساب{% else %}WhatsApp{% endif %}</span>
+        </a>
+      </div>
+
+      <!-- MOBILE MENU BUTTON -->
+      <button id="mobile-menu-btn" class="md:hidden text-gray-300 hover:text-white focus:outline-none p-2">
+        <i class="fas fa-bars text-xl"></i>
+      </button>
+
+    </div>
+
+    <!-- MOBILE DROPDOWN -->
+    <div id="mobile-menu" class="hidden md:hidden glass-panel border-t border-white/10 px-4 pt-3 pb-6 flex flex-col gap-3 text-sm">
+      <a href="/" class="py-2 hover:text-gold border-b border-white/5">{% if lang == 'ar' %}الرئيسية{% else %}Home{% endif %}</a>
+      <a href="/vehicles" class="py-2 hover:text-gold border-b border-white/5">{% if lang == 'ar' %}معرض السيارات{% else %}Vehicles Showcase{% endif %}</a>
+      <a href="/how-it-works" class="py-2 hover:text-gold border-b border-white/5">{% if lang == 'ar' %}خطوات الاستيراد{% else %}Import Process{% endif %}</a>
+      <a href="/tracking" class="py-2 hover:text-gold border-b border-white/5 text-emerald-400 font-bold">{% if lang == 'ar' %}تتبع شحنتك (مباشر){% else %}Track Vehicle (Live){% endif %}</a>
+      <a href="/contact" class="py-2 hover:text-gold border-b border-white/5">{% if lang == 'ar' %}صالة العرض والتواصل{% else %}Showroom & Contact{% endif %}</a>
+      
+      <!-- Mobile Auth Buttons -->
+      {% if user %}
+        <div class="py-2 border-b border-white/5 flex items-center justify-between">
+          <a href="/profile" class="text-gold font-bold flex items-center gap-2">
+            <i class="fas fa-user-circle"></i>
+            <span>{{ user.name }} ({% if lang == 'ar' %}حسابي وحجوزاتي{% else %}My Profile{% endif %})</span>
+          </a>
+          <a href="/logout" class="text-rose-400 text-xs px-2 py-1">{% if lang == 'ar' %}خروج{% else %}Logout{% endif %}</a>
+        </div>
+      {% else %}
+        <div class="grid grid-cols-2 gap-2 py-2 border-b border-white/5">
+          <a href="/login" class="text-center py-2 bg-white/5 border border-white/10 rounded-lg text-gray-200 hover:text-gold font-semibold">
+            {% if lang == 'ar' %}تسجيل الدخول{% else %}Sign In{% endif %}
+          </a>
+          <a href="/register" class="text-center py-2 gold-btn rounded-lg font-bold">
+            {% if lang == 'ar' %}إنشاء حساب جديد{% else %}Register{% endif %}
+          </a>
+        </div>
+      {% endif %}
+
+      <a href="https://wa.me/{{ settings.whatsapp_number }}" target="_blank" class="mt-2 w-full text-center bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-lg flex items-center justify-center gap-2">
+        <i class="fab fa-whatsapp"></i>
+        <span>{% if lang == 'ar' %}تواصل فوري عبر واتساب{% else %}Chat on WhatsApp{% endif %}</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- MAIN BODY CONTENT -->
+  <main class="flex-grow">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- RESERVATION MODAL (DYNAMIC FOR ANY VEHICLE) -->
+  <div id="reserveModal" class="hidden fixed inset-0 z-50 items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+    <div class="relative bg-card border border-white/15 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl">
+      <!-- Modal Header -->
+      <div class="p-6 border-b border-white/10 flex items-center justify-between bg-black/40">
+        <div>
+          <span class="text-xs uppercase font-bold text-gold tracking-wider">
+            {% if lang == 'ar' %}طلب حجز مبدئي رسمي{% else %}Official Reservation Request{% endif %}
+          </span>
+          <h3 id="modal_vehicle_title" class="text-lg font-bold text-white mt-1">اسم السيارة</h3>
+        </div>
+        <button id="closeReserveModal" class="text-gray-400 hover:text-white p-2 text-xl">&times;</button>
+      </div>
+
+      <!-- Pricing Strip in Modal -->
+      <div class="bg-white/5 px-6 py-3 flex items-center justify-between text-xs border-b border-white/10">
+        <div>
+          <span class="text-gray-400">{% if lang == 'ar' %}السعر الإجمالي:{% else %}Total Price:{% endif %}</span>
+          <span id="modal_vehicle_price" class="font-bold text-white mr-1 text-sm">--</span>
+        </div>
+        <div>
+          <span class="text-gray-400">{% if lang == 'ar' %}عربون الجدية المطلوب:{% else %}Deposit Required:{% endif %}</span>
+          <span id="modal_vehicle_deposit" class="font-bold text-gold mr-1 text-sm">--</span>
+        </div>
+      </div>
+
+      <!-- Form Body -->
+      <div class="p-6">
+        <form id="reserveForm" class="flex flex-col gap-4">
+          <input type="hidden" id="modal_vehicle_id" name="vehicle_id" value="">
+          
+          <div>
+            <label class="block text-xs font-semibold text-gray-300 mb-1">
+              {% if lang == 'ar' %}الاسم بالكامل (ثلاثي أو رباعي) *{% else %}Full Name *{% endif %}
+            </label>
+            <input type="text" name="customer_name" value="{{ user.name if user else '' }}" required placeholder="{% if lang == 'ar' %}مثال: أحمد محمد محمود{% else %}e.g. Ahmed Mahmoud{% endif %}" class="w-full bg-deep border border-white/15 rounded-lg px-4 py-2.5 text-sm text-white focus:border-gold outline-none">
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-gray-300 mb-1">
+              {% if lang == 'ar' %}رقم الهاتف المحمول (واتساب) *{% else %}Phone Number (WhatsApp) *{% endif %}
+            </label>
+            <input type="tel" name="customer_phone" value="{{ user.phone if user else '' }}" required placeholder="010XXXXXXXX" class="w-full bg-deep border border-white/15 rounded-lg px-4 py-2.5 text-sm text-white focus:border-gold outline-none" dir="ltr">
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-gray-300 mb-1">
+                {% if lang == 'ar' %}البريد الإلكتروني (اختياري){% else %}Email Address (Optional){% endif %}
+              </label>
+              <input type="email" name="customer_email" value="{{ user.email if user else '' }}" placeholder="name@domain.com" class="w-full bg-deep border border-white/15 rounded-lg px-4 py-2.5 text-sm text-white focus:border-gold outline-none" dir="ltr">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-gray-300 mb-1">
+                {% if lang == 'ar' %}المحافظة / المدينة{% else %}Governorate / City{% endif %}
+              </label>
+              <input type="text" name="customer_city" value="{{ user.city if user else '' }}" placeholder="{% if lang == 'ar' %}القاهرة، الإسكندرية، ...{% else %}Cairo, Alexandria...{% endif %}" class="w-full bg-deep border border-white/15 rounded-lg px-4 py-2.5 text-sm text-white focus:border-gold outline-none">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-gray-300 mb-1">
+              {% if lang == 'ar' %}ملاحظات إضافية أو استفسارات{% else %}Additional Notes or Requests{% endif %}
+            </label>
+            <textarea name="customer_notes" rows="2" placeholder="{% if lang == 'ar' %}أي طلبات خاصة بالفحص، مواعيد التسليم، أو طريقة السداد...{% else %}Any specific requests regarding inspection, timing, etc.{% endif %}" class="w-full bg-deep border border-white/15 rounded-lg px-4 py-2 text-sm text-white focus:border-gold outline-none"></textarea>
+          </div>
+
+          <div class="p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg text-xs text-amber-200">
+            <i class="fas fa-info-circle mr-1"></i>
+            {% if lang == 'ar' %}
+              إرسال هذا الطلب ينشئ كود حجز رسمي ومسار تتبع خاص بك. سيتواصل معك مالك صالة سيارتك شخصياً لتأكيد التفاصيل.
+            {% else %}
+              Submitting generates an official booking code and private tracking timeline. SYARTK owner will contact you directly to confirm.
+            {% endif %}
+          </div>
+
+          <button id="reserveSubmitBtn" type="submit" class="w-full gold-btn py-3 rounded-lg text-sm font-bold flex items-center justify-center gap-2">
+            <i class="fas fa-check-circle"></i>
+            <span>{% if lang == 'ar' %}تأكيد وإرسال طلب الحجز{% else %}Confirm & Submit Booking{% endif %}</span>
+          </button>
+        </form>
+
+        <!-- Success Message Box -->
+        <div id="modalStatusMsg" class="hidden text-center py-6 flex flex-col items-center">
+          <div class="w-16 h-16 rounded-full bg-emerald-500/20 border border-emerald-500 text-emerald-400 flex items-center justify-center text-3xl mb-4">
+            <i class="fas fa-check"></i>
+          </div>
+          <h4 class="text-xl font-bold text-white mb-2">
+            {% if lang == 'ar' %}تم تسجيل طلب الحجز بنجاح!{% else %}Reservation Submitted Successfully!{% endif %}
+          </h4>
+          <p class="text-xs text-gray-400 max-w-sm mb-4">
+            {% if lang == 'ar' %}
+              احتفظ بكود الحجز الخاص بك لتتبع مراحل شحن السيارة والتخليص الجمركي خطوة بخطوة:
+            {% else %}
+              Save your unique booking reference to track your vehicle's international journey and customs clearance:
+            {% endif %}
+          </p>
+          <div class="bg-black/60 border border-gold/40 px-6 py-3 rounded-lg text-gold font-mono font-bold text-lg mb-6">
+            <span id="confirmedBookingCode">SYR-2026-XXXX</span>
+          </div>
+          <div class="flex flex-col sm:flex-row gap-3 w-full">
+            <a id="modalTrackingLink" href="/tracking" class="flex-1 gold-btn py-2.5 rounded-lg text-xs font-bold text-center">
+              <i class="fas fa-shipping-fast mr-1"></i>
+              {% if lang == 'ar' %}فتح صفحة تتبع الشحنة{% else %}Open Tracking Page{% endif %}
+            </a>
+            <a href="https://wa.me/{{ settings.whatsapp_number }}" target="_blank" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white py-2.5 rounded-lg text-xs font-bold text-center">
+              <i class="fab fa-whatsapp mr-1"></i>
+              {% if lang == 'ar' %}متابعة عبر واتساب{% else %}Follow up via WhatsApp{% endif %}
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIGHTBOX MODAL FOR FULL-SIZE PHOTOS -->
+  <div id="lightboxModal" class="hidden fixed inset-0 z-50 items-center justify-center p-4 bg-black/95 backdrop-blur-md">
+    <button id="lightboxClose" class="absolute top-6 right-6 text-white text-3xl hover:text-gold p-2">&times;</button>
+    <div class="max-w-5xl max-h-[90vh] flex flex-col items-center">
+      <img id="lightboxImage" src="" alt="Vehicle inspection" class="max-h-[80vh] w-auto object-contain rounded-lg shadow-2xl">
+      <p id="lightboxCaption" class="text-gray-300 text-sm mt-3 text-center"></p>
+    </div>
+  </div>
+
+  <!-- FLOATING WHATSAPP CTA -->
+  <aside aria-label="WhatsApp Contact" class="fixed bottom-6 right-6 z-40 flex items-center gap-3">
+    <div class="hidden md:block bg-black/80 backdrop-blur-md border border-white/10 px-3 py-1.5 rounded-full text-xs text-gray-200 shadow-xl">
+      {% if lang == 'ar' %}استفسار سريع مع المالك؟{% else %}Direct Owner Inquiry?{% endif %}
+    </div>
+    <a href="https://wa.me/{{ settings.whatsapp_number }}?text={% if lang == 'ar' %}مرحباً صالة Syartk، أود الاستفسار عن تفاصيل استيراد سيارة.{% else %}Hello Syartk Showroom, I would like to inquire about importing a car.{% endif %}" target="_blank" class="relative group w-14 h-14 bg-emerald-600 hover:bg-emerald-500 text-white rounded-full flex items-center justify-center shadow-2xl shadow-emerald-900/50 hover:scale-110 transition duration-300">
+      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-20"></span>
+      <i class="fab fa-whatsapp text-2xl"></i>
+    </a>
+  </aside>
+
+  <!-- LUXURY FOOTER -->
+  <footer class="bg-black border-t border-white/10 pt-16 pb-10 text-gray-400 text-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
+      
+      <!-- Brand & Mission -->
+      <div class="space-y-4">
+        <div class="flex items-center gap-3">
+          <img src="/static/images/logo.svg" alt="Syartk" class="h-9 w-auto">
+        </div>
+        <p class="leading-relaxed text-gray-400">
+          {{ settings.tagline_ar if lang == 'ar' else settings.tagline_en }}
+        </p>
+        <div class="flex items-center gap-3 text-gray-400 text-sm">
+          <span class="text-gold"><i class="fas fa-certificate"></i></span>
+          <span>{% if lang == 'ar' %}سجل تجاري وبطاقة ضريبية معتمدة{% else %}Certified Commercial Registry & Tax ID{% endif %}</span>
+        </div>
+      </div>
+
+      <!-- Quick Links -->
+      <div>
+        <h4 class="text-white font-bold text-sm mb-4 uppercase tracking-wider">
+          {% if lang == 'ar' %}روابط المعرض{% else %}Showroom Links{% endif %}
+        </h4>
+        <ul class="space-y-2.5">
+          <li><a href="/vehicles" class="hover:text-gold transition">{% if lang == 'ar' %}جميع السيارات المتاحة{% else %}All Available Vehicles{% endif %}</a></li>
+          <li><a href="/vehicles?origin=Germany" class="hover:text-gold transition">{% if lang == 'ar' %}سيارات وارد ألمانيا{% else %}German Imports{% endif %}</a></li>
+          <li><a href="/vehicles?origin=Korea" class="hover:text-gold transition">{% if lang == 'ar' %}سيارات وارد كوريا الجنوبية{% else %}South Korea Imports{% endif %}</a></li>
+          <li><a href="/vehicles?origin=UAE" class="hover:text-gold transition">{% if lang == 'ar' %}سيارات مواصفات خليجية{% else %}Gulf Specs Vehicles{% endif %}</a></li>
+          <li><a href="/tracking" class="hover:text-gold transition">{% if lang == 'ar' %}نظام تتبع الشحنات المباشر{% else %}Live Shipment Tracker{% endif %}</a></li>
+        </ul>
+      </div>
+
+      <!-- Import Process & Security -->
+      <div>
+        <h4 class="text-white font-bold text-sm mb-4 uppercase tracking-wider">
+          {% if lang == 'ar' %}الضمان وسياسة الحجز{% else %}Guarantee & Deposit{% endif %}
+        </h4>
+        <p class="leading-relaxed text-gray-400 mb-3">
+          {{ settings.deposit_policy_ar if lang == 'ar' else settings.deposit_policy_en }}
+        </p>
+        <div class="p-3 bg-white/5 border border-white/10 rounded text-[11px] text-gray-300">
+          <i class="fas fa-lock text-gold mr-1"></i>
+          {% if lang == 'ar' %}
+            كل سيارة تخضع لفحص فني إلكتروني كامل Dekra أو K-Car مع تصوير فيديو 4K للمحرك والشاسيه قبل الشحن.
+          {% else %}
+            Every vehicle undergoes 100% certified mechanical and chassis inspection prior to loading.
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Showroom Contact -->
+      <div>
+        <h4 class="text-white font-bold text-sm mb-4 uppercase tracking-wider">
+          {% if lang == 'ar' %}المقر والتواصل{% else %}Cairo Headquarters{% endif %}
+        </h4>
+        <ul class="space-y-3">
+          <li class="flex items-start gap-2">
+            <i class="fas fa-map-marker-alt text-gold mt-1"></i>
+            <span>{{ settings.cairo_showroom_address_ar if lang == 'ar' else settings.cairo_showroom_address_en }}</span>
+          </li>
+          <li class="flex items-center gap-2">
+            <i class="fas fa-phone-alt text-gold"></i>
+            <span dir="ltr">{{ settings.phone_primary }}</span>
+          </li>
+          <li class="flex items-center gap-2">
+            <i class="fab fa-whatsapp text-emerald-400"></i>
+            <span dir="ltr">+{{ settings.whatsapp_number }}</span>
+          </li>
+          <li class="flex items-center gap-2">
+            <i class="fas fa-envelope text-gold"></i>
+            <span>{{ settings.email_contact }}</span>
+          </li>
+          <li class="flex items-center gap-2 text-gray-400 text-[11px]">
+            <i class="fas fa-clock text-gold"></i>
+            <span>{{ settings.working_hours_ar if lang == 'ar' else settings.working_hours_en }}</span>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- Bottom Copyright -->
+    <div class="max-w-7xl mx-auto px-4 border-t border-white/5 pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-gray-400 text-[11px]">
+      <div>
+        © 2026 Syartk Automotive Platform. {% if lang == 'ar' %}جميع الحقوق محفوظة. صالة استيراد السيارات الفاخرة لمصر.{% else %}All rights reserved. Exclusive Automotive Import Showroom.{% endif %}
+      </div>
+      <div class="flex items-center gap-4">
+        <span>{% if lang == 'ar' %}صالة عرض معتمدة - مدينة العبور، القاهرة{% else %}Certified Showroom - El Obour City, Cairo{% endif %}</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="/static/js/main.js"></script>
+  {% block extra_scripts %}{% endblock %}
+</body>
+</html>

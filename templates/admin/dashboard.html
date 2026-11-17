@@ -1,0 +1,591 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}لوحة التحكم المركزية - معرض سيارتك{% endblock %}
+
+{% block content %}
+
+<!-- TOP MASTER CONTROL HEADER -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+  <div>
+    <div class="flex items-center gap-3">
+      <h1 class="text-2xl sm:text-3xl font-extrabold text-white">لوحة تحكم معرض سيارتك (SYARTK)</h1>
+      <span class="bg-gold/15 text-gold border border-gold/30 px-3 py-0.5 rounded-full text-xs font-bold font-mono">
+        إصدار المالك المستقل
+      </span>
+    </div>
+    <p class="text-xs text-gray-400 mt-1">
+      تحكم كامل ومباشر في إضافة السيارات، تعديل الأسعار، تغيير الحالات، حذف أو مضاعفة السيارات، الحجوزات، وإعدادات الواتساب دون الحاجة لأي كود برمجي.
+    </p>
+  </div>
+
+  <div class="flex flex-wrap items-center gap-3">
+    <!-- Live Showroom Preview Link -->
+    <a href="/" target="_blank" class="bg-white/10 hover:bg-white/20 text-white px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 border border-white/10">
+      <i class="fas fa-external-link-alt text-gold"></i>
+      <span>معاينة الموقع الحي</span>
+    </a>
+
+    <!-- Primary Add Vehicle Button -->
+    <a href="/admin/vehicles/new" class="gold-btn px-5 py-2.5 rounded-xl text-xs font-black flex items-center gap-2 shadow-lg shadow-gold/20 hover:scale-105 transition transform">
+      <i class="fas fa-plus-circle text-sm"></i>
+      <span>+ إضافة سيارة جديدة للمعرض</span>
+    </a>
+  </div>
+</div>
+
+<!-- TOP KPI CARDS -->
+<div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+  
+  <!-- Total Vehicles -->
+  <div class="glass-card p-4 rounded-2xl border border-white/10 flex items-center justify-between">
+    <div>
+      <span class="text-[11px] text-gray-400 font-semibold block mb-1">إجمالي السيارات</span>
+      <span class="text-2xl sm:text-3xl font-black text-white font-mono">{{ stats.total_vehicles }}</span>
+      <span class="text-[10px] text-gray-400 block mt-1">مسجلة بالمعرض</span>
+    </div>
+    <div class="w-10 h-10 rounded-xl bg-gold/15 text-gold flex items-center justify-center text-lg">
+      <i class="fas fa-car-side"></i>
+    </div>
+  </div>
+
+  <!-- Available for Sale -->
+  <div class="glass-card p-4 rounded-2xl border border-white/10 flex items-center justify-between">
+    <div>
+      <span class="text-[11px] text-gray-400 font-semibold block mb-1">المتاحة للبيع فوراً</span>
+      <span class="text-2xl sm:text-3xl font-black text-emerald-400 font-mono">{{ stats.available_vehicles }}</span>
+      <span class="text-[10px] text-emerald-500 block mt-1">🟢 معروضة بالموقع</span>
+    </div>
+    <div class="w-10 h-10 rounded-xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center text-lg">
+      <i class="fas fa-check-circle"></i>
+    </div>
+  </div>
+
+  <!-- Reserved Vehicles -->
+  <div class="glass-card p-4 rounded-2xl border border-white/10 flex items-center justify-between">
+    <div>
+      <span class="text-[11px] text-gray-400 font-semibold block mb-1">السيارات المحجوزة</span>
+      <span class="text-2xl sm:text-3xl font-black text-amber-400 font-mono">{{ stats.reserved_vehicles }}</span>
+      <span class="text-[10px] text-amber-500 block mt-1">🟡 بانتظار الشحن/الاستلام</span>
+    </div>
+    <div class="w-10 h-10 rounded-xl bg-amber-500/15 text-amber-400 flex items-center justify-center text-lg">
+      <i class="fas fa-clock"></i>
+    </div>
+  </div>
+
+  <!-- Sold Vehicles -->
+  <div class="glass-card p-4 rounded-2xl border border-white/10 flex items-center justify-between">
+    <div>
+      <span class="text-[11px] text-gray-400 font-semibold block mb-1">السيارات المباعة</span>
+      <span class="text-2xl sm:text-3xl font-black text-red-400 font-mono">{{ stats.sold_vehicles }}</span>
+      <span class="text-[10px] text-gray-400 block mt-1">🔴 تم تسليمها</span>
+    </div>
+    <div class="w-10 h-10 rounded-xl bg-red-500/15 text-red-400 flex items-center justify-center text-lg">
+      <i class="fas fa-handshake"></i>
+    </div>
+  </div>
+
+  <!-- Bookings & Leads -->
+  <div class="glass-card p-4 rounded-2xl border border-white/10 flex items-center justify-between col-span-2 lg:col-span-1">
+    <div>
+      <span class="text-[11px] text-gray-400 font-semibold block mb-1">طلبات الحجز والعملاء</span>
+      <span class="text-2xl sm:text-3xl font-black text-blue-400 font-mono">{{ stats.total_bookings }}</span>
+      <div class="mt-1 text-[10px]">
+        {% if stats.pending_bookings > 0 %}
+        <span class="text-amber-400 font-bold bg-amber-400/20 px-2 py-0.5 rounded">
+          {{ stats.pending_bookings }} بانتظار الرد
+        </span>
+        {% else %}
+        <span class="text-gray-400">جميع الطلبات معالجة</span>
+        {% endif %}
+      </div>
+    </div>
+    <div class="w-10 h-10 rounded-xl bg-blue-500/15 text-blue-400 flex items-center justify-center text-lg">
+      <i class="fas fa-comments"></i>
+    </div>
+  </div>
+
+</div>
+
+<!-- MASTER TABS NAVIGATION BAR -->
+<div class="glass-panel p-2 rounded-2xl border border-white/15 mb-6 flex flex-wrap items-center gap-2">
+  <button type="button" class="dash-tab-btn px-4 py-2.5 rounded-xl text-xs transition flex items-center gap-2" data-tab="vehicles">
+    <i class="fas fa-car text-sm"></i>
+    <span class="font-bold">🚗 أسطول المعرض والتحكم الفوري ({{ all_vehicles | length }})</span>
+  </button>
+
+  <button type="button" class="dash-tab-btn px-4 py-2.5 rounded-xl text-xs transition flex items-center gap-2" data-tab="bookings">
+    <i class="fas fa-calendar-check text-sm"></i>
+    <span class="font-bold">📋 طلبات الحجز والعملاء ({{ all_bookings | length }})</span>
+    {% if stats.pending_bookings > 0 %}
+    <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+    {% endif %}
+  </button>
+
+  <button type="button" class="dash-tab-btn px-4 py-2.5 rounded-xl text-xs transition flex items-center gap-2" data-tab="tracking">
+    <i class="fas fa-shipping-fast text-sm"></i>
+    <span class="font-bold">🚢 متابعة مسارات الشحن ({{ tracked_orders | length }})</span>
+  </button>
+
+  <button type="button" class="dash-tab-btn px-4 py-2.5 rounded-xl text-xs transition flex items-center gap-2" data-tab="settings">
+    <i class="fas fa-cog text-sm"></i>
+    <span class="font-bold">⚙️ إعدادات المعرض وأرقام الواتساب</span>
+  </button>
+</div>
+
+<!-- ========================================================================= -->
+<!-- TAB PANE 1: FLEET & LIVE VEHICLE CONTROLS (THE CORE USER REQUIREMENT)     -->
+<!-- ========================================================================= -->
+<div id="tab-pane-vehicles" class="dash-tab-pane space-y-6">
+
+  <!-- Filter & Realtime Search Bar -->
+  <div class="glass-card p-4 rounded-2xl border border-white/10 flex flex-col md:flex-row items-center justify-between gap-4">
+    
+    <!-- Status Filter Pills -->
+    <div class="flex flex-wrap items-center gap-1.5 text-xs w-full md:w-auto">
+      <button type="button" class="dash-status-filter-btn px-3 py-1.5 rounded-lg bg-gold text-black font-bold transition" data-status="all">
+        الكل (All)
+      </button>
+      <button type="button" class="dash-status-filter-btn px-3 py-1.5 rounded-lg bg-white/5 text-gray-400 hover:text-white transition" data-status="available">
+        🟢 المتاحة ({{ stats.available_vehicles }})
+      </button>
+      <button type="button" class="dash-status-filter-btn px-3 py-1.5 rounded-lg bg-white/5 text-gray-400 hover:text-white transition" data-status="reserved">
+        🟡 المحجوزة ({{ stats.reserved_vehicles }})
+      </button>
+      <button type="button" class="dash-status-filter-btn px-3 py-1.5 rounded-lg bg-white/5 text-gray-400 hover:text-white transition" data-status="sold">
+        🔴 المباعة ({{ stats.sold_vehicles }})
+      </button>
+      <button type="button" class="dash-status-filter-btn px-3 py-1.5 rounded-lg bg-white/5 text-gray-400 hover:text-white transition" data-status="hidden">
+        ⚪ المسودات المخفية
+      </button>
+    </div>
+
+    <!-- Live Search Input -->
+    <div class="relative w-full md:w-80">
+      <i class="fas fa-search absolute right-3.5 top-3 text-gray-400 text-xs"></i>
+      <input type="text" id="dashVehicleSearch" placeholder="ابحث باسم السيارة، الموديل، الشاسيه..." class="w-full bg-black/60 border border-white/15 rounded-xl pr-9 pl-4 py-2 text-xs text-white focus:border-gold outline-none">
+    </div>
+
+    <!-- Add Vehicle Quick Link -->
+    <a href="/admin/vehicles/new" class="gold-btn px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 flex-shrink-0">
+      <i class="fas fa-plus"></i>
+      <span>إضافة سيارة جديدة</span>
+    </a>
+
+  </div>
+
+  <!-- THE MASTER VEHICLES TABLE -->
+  <div class="glass-card rounded-3xl overflow-hidden border border-white/15 shadow-2xl">
+    <div class="overflow-x-auto">
+      <table class="w-full text-right text-xs text-gray-300">
+        <thead class="bg-black/80 text-gray-400 uppercase tracking-wider text-[11px] border-b border-white/10">
+          <tr>
+            <th class="p-4">السيارة والموديل</th>
+            <th class="p-4">بلد المنشأ والشاسيه</th>
+            <th class="p-4">السعر (ج.م) - تعديل مباشر</th>
+            <th class="p-4">حالة العرض</th>
+            <th class="p-4 text-center">المخزون المتاح</th>
+            <th class="p-4 text-center">إجراءات الإدارة (حذف / تعديل / نسخ)</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-white/5" id="dashVehiclesTableBody">
+          {% for car in all_vehicles %}
+          <tr class="dash-vehicle-row hover:bg-white/[0.03] transition" data-status="{{ car.status }}" data-search="{{ car.brand }} {{ car.model }} {{ car.year }} {{ car.vin }} {{ car.country_of_origin }}">
+            
+            <!-- Vehicle Thumbnail & Name -->
+            <td class="p-4">
+              <div class="flex items-center gap-3">
+                <div class="w-16 h-12 rounded-xl overflow-hidden bg-black flex-shrink-0 border border-white/10 relative group">
+                  <img src="{{ car.cover_image or '/static/images/car-placeholder.jpg' }}" alt="" class="w-full h-full object-cover">
+                  {% if car.is_featured %}
+                  <span class="absolute top-1 right-1 bg-gold text-black text-[9px] px-1 font-bold rounded">مميزة</span>
+                  {% endif %}
+                </div>
+                <div>
+                  <a href="/vehicle/{{ car.slug }}" target="_blank" class="font-bold text-white hover:text-gold transition text-sm flex items-center gap-1.5">
+                    <span>{{ car.brand }} {{ car.model }}</span>
+                    <i class="fas fa-external-link-alt text-[10px] text-gray-500"></i>
+                  </a>
+                  <span class="text-[11px] text-gray-400 block mt-0.5">{{ car.year }} • {{ car.trim or 'أعلى فئة' }}</span>
+                </div>
+              </div>
+            </td>
+
+            <!-- Origin & VIN -->
+            <td class="p-4 font-mono">
+              <span class="text-xs text-white font-bold block">{{ car.country_of_origin | flag }}</span>
+              <span class="text-[10px] text-gold tracking-wider block mt-0.5">{{ car.vin }}</span>
+            </td>
+
+            <!-- Real-time Price Editor -->
+            <td class="p-4">
+              <div class="flex items-center gap-1.5">
+                <input type="number" step="1000" class="quick-price-input bg-black/70 border border-white/20 rounded-lg px-2.5 py-1.5 text-xs text-white font-mono font-bold w-32 focus:border-gold outline-none transition" data-vehicle-id="{{ car.id }}" value="{{ car.selling_price_egp | int }}" title="اكتب السعر واضغط Enter للحفظ المباشر">
+                <span class="text-[11px] text-gray-400 font-bold">ج.م</span>
+              </div>
+              <span class="text-[9px] text-gray-500 block mt-0.5">احفظ بـ Enter أو الخروج من الحقل</span>
+            </td>
+
+            <!-- Real-time Status Dropdown -->
+            <td class="p-4">
+              <select class="quick-status-select bg-black/70 border border-white/20 rounded-lg px-2.5 py-1.5 text-xs text-white focus:border-gold outline-none transition" data-vehicle-id="{{ car.id }}">
+                <option value="available" {% if car.status == 'available' %}selected{% endif %}>🟢 متاحة للبيع (Available)</option>
+                <option value="reserved" {% if car.status == 'reserved' %}selected{% endif %}>🟡 محجوزة (Reserved)</option>
+                <option value="sold" {% if car.status == 'sold' %}selected{% endif %}>🔴 مباعة (Sold)</option>
+                <option value="hidden" {% if car.status == 'hidden' %}selected{% endif %}>⚪ مسودة مخفية (Hidden)</option>
+              </select>
+            </td>
+
+            <!-- Live Stock Adjuster (+ / - buttons) -->
+            <td class="p-4 text-center">
+              <div class="inline-flex items-center gap-2 bg-black/60 border border-white/15 rounded-xl px-2.5 py-1">
+                <button type="button" class="stock-adjust-btn w-6 h-6 rounded-lg bg-white/10 hover:bg-red-500 hover:text-white text-gray-300 font-bold text-xs flex items-center justify-center transition" data-vehicle-id="{{ car.id }}" data-delta="-1" title="تقليل وحدة واحدة">
+                  <i class="fas fa-minus text-[10px]"></i>
+                </button>
+                <span id="stock-val-{{ car.id }}" class="font-bold text-sm {% if car.units_available > 0 %}text-emerald-400{% else %}text-red-400{% endif %} font-mono min-w-[20px] text-center">
+                  {{ car.units_available }}
+                </span>
+                <button type="button" class="stock-adjust-btn w-6 h-6 rounded-lg bg-white/10 hover:bg-emerald-500 hover:text-black text-gray-300 font-bold text-xs flex items-center justify-center transition" data-vehicle-id="{{ car.id }}" data-delta="1" title="زيادة وحدة واحدة">
+                  <i class="fas fa-plus text-[10px]"></i>
+                </button>
+              </div>
+            </td>
+
+            <!-- Management Actions (Delete, Edit, Duplicate, View) -->
+            <td class="p-4 text-center">
+              <div class="flex items-center justify-center gap-1.5">
+                
+                <!-- View Live Page -->
+                <a href="/vehicle/{{ car.slug }}" target="_blank" class="p-2 rounded-lg bg-white/5 hover:bg-white/15 text-gray-300 hover:text-white transition" title="معاينة الصفحة للجمهور">
+                  <i class="fas fa-eye text-xs"></i>
+                </a>
+
+                <!-- Full Edit Page -->
+                <a href="/admin/vehicles/{{ car.id }}/edit" class="p-2 rounded-lg bg-gold/15 hover:bg-gold text-gold hover:text-black transition font-bold" title="تعديل كافة التفاصيل والصور">
+                  <i class="fas fa-edit text-xs"></i>
+                </a>
+
+                <!-- Duplicate Listing Button -->
+                <form action="/admin/vehicles/{{ car.id }}/duplicate" method="POST" class="inline" onsubmit="return confirm('هل تريد إنشاء نسخة مطابقة من هذه السيارة للتعديل السريع؟');">
+                  <button type="submit" class="p-2 rounded-lg bg-blue-500/15 hover:bg-blue-500 text-blue-400 hover:text-white transition" title="نسخ السيارة (مضاعفة)">
+                    <i class="fas fa-clone text-xs"></i>
+                  </button>
+                </form>
+
+                <!-- Delete Vehicle Button -->
+                <form action="/admin/vehicles/{{ car.id }}/delete" method="POST" class="inline" onsubmit="return confirm('تحذير نهائي: هل أنت متأكد من حذف هذه السيارة وجميع صورها ومواصفاتها؟ لن يمكنك التراجع.');">
+                  <button type="submit" class="p-2 rounded-lg bg-red-500/15 hover:bg-red-500 text-red-400 hover:text-white transition" title="حذف السيارة نهائياً">
+                    <i class="fas fa-trash text-xs"></i>
+                  </button>
+                </form>
+
+              </div>
+            </td>
+
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    {% if not all_vehicles %}
+    <div class="p-12 text-center">
+      <i class="fas fa-car text-4xl text-gray-600 mb-3"></i>
+      <h4 class="text-base font-bold text-white mb-1">لا توجد سيارات مسجلة حالياً</h4>
+      <p class="text-xs text-gray-400 mb-4">ابدأ بإضافة أول سيارة لمعرضك عبر الضغط على الزر أدناه</p>
+      <a href="/admin/vehicles/new" class="gold-btn px-6 py-2.5 rounded-xl text-xs font-bold inline-flex items-center gap-2">
+        <i class="fas fa-plus-circle"></i>
+        <span>إضافة سيارة جديدة</span>
+      </a>
+    </div>
+    {% endif %}
+
+  </div>
+
+</div>
+
+<!-- ========================================================================= -->
+<!-- TAB PANE 2: CUSTOMER BOOKINGS & DIRECT WHATSAPP CONVERSATIONS            -->
+<!-- ========================================================================= -->
+<div id="tab-pane-bookings" class="dash-tab-pane hidden space-y-6">
+  
+  <div class="glass-card p-6 rounded-3xl border border-white/15">
+    <div class="flex items-center justify-between mb-6 pb-4 border-b border-white/10">
+      <div>
+        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+          <i class="fas fa-calendar-check text-gold"></i>
+          <span>سجل طلبات الحجز والاستفسارات المباشرة</span>
+        </h3>
+        <p class="text-xs text-gray-400 mt-1">
+          يمكنك التواصل الفوري مع العميل عبر الواتساب بنقرة واحدة، أو اعتماد الحجز لتخصيص السيارة وبدء مراحل التتبع.
+        </p>
+      </div>
+    </div>
+
+    {% if all_bookings %}
+    <div class="space-y-4">
+      {% for b in all_bookings %}
+      <div class="p-5 bg-black/40 rounded-2xl border border-white/10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-5 hover:border-gold/30 transition">
+        
+        <!-- Left: Car & Client details -->
+        <div class="flex items-start sm:items-center gap-4">
+          <div class="w-16 h-16 rounded-2xl overflow-hidden bg-black flex-shrink-0 border border-white/10">
+            <img src="{{ b.cover_image or '/static/images/car-placeholder.jpg' }}" alt="" class="w-full h-full object-cover">
+          </div>
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="text-xs font-mono font-bold text-gold bg-gold/10 px-2 py-0.5 rounded">{{ b.booking_code }}</span>
+              <span class="text-[10px] px-2 py-0.5 rounded font-bold {% if b.status == 'approved' or b.status == 'active_tracking' %}bg-emerald-500/20 text-emerald-400{% elif b.status == 'pending' %}bg-amber-500/20 text-amber-300{% else %}bg-gray-800 text-gray-400{% endif %}">
+                {% if b.status == 'pending' %}بانتظار المراجعة{% elif b.status == 'approved' %}حجز معتمد{% elif b.status == 'active_tracking' %}قيد الشحن والتتبع{% else %}{{ b.status }}{% endif %}
+              </span>
+              <span class="text-[10px] text-gray-500 font-mono">{{ b.created_at }}</span>
+            </div>
+            
+            <h4 class="text-base font-bold text-white">{{ b.brand }} {{ b.model }} ({{ b.year }})</h4>
+            
+            <div class="text-xs text-gray-300 flex flex-wrap items-center gap-4 mt-1.5">
+              <span class="font-semibold"><i class="fas fa-user text-gold mr-1"></i> {{ b.customer_name }}</span>
+              <span class="font-mono text-gold"><i class="fas fa-phone text-gold mr-1"></i> {{ b.customer_phone }}</span>
+              <span class="text-gray-400 font-mono">{{ b.selling_price_egp | currency('ar') }}</span>
+            </div>
+
+            {% if b.notes %}
+            <div class="mt-2 text-[11px] text-gray-400 bg-white/5 p-2 rounded-lg border border-white/5">
+              <i class="fas fa-comment-dots text-gray-500 mr-1"></i>
+              <span>ملاحظة العميل: {{ b.notes }}</span>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Right: Action Buttons -->
+        <div class="flex flex-wrap items-center gap-2.5 self-end lg:self-auto w-full lg:w-auto justify-end">
+          
+          <!-- Direct WhatsApp Chat Button -->
+          <a href="https://wa.me/{{ b.customer_phone.replace('+', '').replace(' ', '') }}?text=مرحباً أستاذ {{ b.customer_name }}، نتواصل معك بخصوص طلب حجز سيارة {{ b.brand }} {{ b.model }} على موقع SYARTK، كود الحجز: {{ b.booking_code }}." target="_blank" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-md">
+            <i class="fab fa-whatsapp text-sm"></i>
+            <span>محادثة واتساب</span>
+          </a>
+
+          <!-- Approve & Start Tracking -->
+          {% if b.status == 'pending' %}
+          <form action="/admin/bookings/{{ b.id }}/status" method="POST" class="inline">
+            <input type="hidden" name="new_status" value="approved">
+            <input type="hidden" name="deposit_paid" value="1">
+            <button type="submit" class="gold-btn px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5">
+              <i class="fas fa-check-circle"></i>
+              <span>اعتماد وبدء التتبع</span>
+            </button>
+          </form>
+          {% else %}
+          <a href="/admin/tracking/{{ b.id }}" class="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition">
+            <i class="fas fa-map-marked-alt text-gold"></i>
+            <span>إدارة الشحنة</span>
+          </a>
+          {% endif %}
+
+          <!-- Delete Booking -->
+          <form action="/admin/bookings/{{ b.id }}/delete" method="POST" class="inline" onsubmit="return confirm('هل تريد حذف هذا الحجز نهائياً؟');">
+            <button type="submit" class="p-2 rounded-xl bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-white transition" title="حذف الحجز">
+              <i class="fas fa-trash text-xs"></i>
+            </button>
+          </form>
+
+        </div>
+
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="p-12 text-center text-xs text-gray-400">
+      <i class="fas fa-inbox text-4xl text-gray-600 mb-2 block"></i>
+      لا توجد طلبات حجز حالياً. عند قيام أي عميل بطلب حجز سيظهر هنا فوراً.
+    </div>
+    {% endif %}
+
+  </div>
+
+</div>
+
+<!-- ========================================================================= -->
+<!-- TAB PANE 3: TRACKING SHIPMENTS & EVIDENCE PHOTOS                         -->
+<!-- ========================================================================= -->
+<div id="tab-pane-tracking" class="dash-tab-pane hidden space-y-6">
+  
+  <div class="glass-card p-6 rounded-3xl border border-white/15">
+    <div class="flex items-center justify-between mb-6 pb-4 border-b border-white/10">
+      <div>
+        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+          <i class="fas fa-shipping-fast text-gold"></i>
+          <span>متابعة الشحنات والمراحل التسع للاستيراد</span>
+        </h3>
+        <p class="text-xs text-gray-400 mt-1">
+          لكل عميل صفحة تتبع خاصة برمز الحجز، يمكنك تحديث المراحل ورفع صور وفيديوهات الفحص والموانئ الجمركية.
+        </p>
+      </div>
+    </div>
+
+    {% if tracked_orders %}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+      {% for order in tracked_orders %}
+      <div class="p-5 bg-black/40 rounded-2xl border border-white/10 flex flex-col justify-between gap-4 hover:border-gold/30 transition">
+        
+        <div>
+          <div class="flex items-center justify-between gap-2 mb-3">
+            <span class="text-xs font-mono font-bold text-gold">{{ order.booking_code }}</span>
+            <span class="text-[11px] text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded">
+              {{ order.completed_stages }} من 9 مراحل مكتملة
+            </span>
+          </div>
+
+          <div class="flex items-center gap-3 mb-3">
+            <img src="{{ order.cover_image or '/static/images/car-placeholder.jpg' }}" alt="" class="w-12 h-12 rounded-xl object-cover bg-black">
+            <div>
+              <h4 class="text-sm font-bold text-white">{{ order.brand }} {{ order.model }}</h4>
+              <span class="text-xs text-gray-400">{{ order.customer_name }} • {{ order.customer_phone }}</span>
+            </div>
+          </div>
+
+          <div class="p-2.5 bg-white/5 rounded-xl border border-white/5 text-xs text-gray-300">
+            <span class="text-gold font-bold block mb-0.5">المرحلة الجارية حالياً:</span>
+            <span>{{ order.current_stage_name or 'المرحلة قيد الإنجاز' }}</span>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3 pt-3 border-t border-white/10">
+          <a href="/admin/tracking/{{ order.id }}" class="flex-1 text-center gold-btn py-2 rounded-xl text-xs font-bold">
+            إدارة مراحل الشحن والصور
+          </a>
+          <a href="/tracking?code={{ order.booking_code }}" target="_blank" class="px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition" title="معاينة شاشة العميل">
+            <i class="fas fa-external-link-alt"></i>
+          </a>
+        </div>
+
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="p-12 text-center text-xs text-gray-400">
+      <i class="fas fa-ship text-4xl text-gray-600 mb-2 block"></i>
+      لا توجد شحنات نشطة حالياً. عند اعتماد أي حجز ستظهر الشحنة ومراحلها التسع هنا مباشرة.
+    </div>
+    {% endif %}
+
+  </div>
+
+</div>
+
+<!-- ========================================================================= -->
+<!-- TAB PANE 4: SHOWROOM SETTINGS & WHATSAPP NUMBER                           -->
+<!-- ========================================================================= -->
+<div id="tab-pane-settings" class="dash-tab-pane hidden space-y-6">
+  
+  <div class="glass-card p-6 sm:p-8 rounded-3xl border border-white/15">
+    <div class="mb-6 pb-4 border-b border-white/10">
+      <h3 class="text-lg font-bold text-white flex items-center gap-2">
+        <i class="fas fa-cog text-gold"></i>
+        <span>بيانات المعرض وأرقام التواصل والواتساب</span>
+      </h3>
+      <p class="text-xs text-gray-400 mt-1">
+        هذه البيانات تتحكم مباشرة في زر الواتساب العائم بكامل الموقع، أرقام الاتصال، عنوان المعرض بالقاهرة، وكلمة سر الأدمن.
+      </p>
+    </div>
+
+    <form action="/admin/settings" method="POST" class="space-y-6">
+      
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        
+        <!-- WhatsApp Number -->
+        <div>
+          <label class="block text-xs font-bold text-emerald-400 mb-1">
+            <i class="fab fa-whatsapp mr-1"></i> رقم الواتساب الرسمي (مع كود الدولة) *
+          </label>
+          <input type="text" name="whatsapp_number" value="{{ settings.whatsapp_number or '+201000000000' }}" required class="w-full bg-deep border border-emerald-500/40 focus:border-emerald-500 rounded-xl px-4 py-2.5 text-xs text-white font-mono outline-none">
+          <span class="text-[10px] text-gray-500 mt-1 block">يستقبل كافة الاستفسارات وحجوزات السيارات في الموقع</span>
+        </div>
+
+        <!-- Primary Phone -->
+        <div>
+          <label class="block text-xs font-bold text-gray-300 mb-1">
+            <i class="fas fa-phone mr-1"></i> الخط الساخن / الهاتف الأساسي *
+          </label>
+          <input type="text" name="phone_primary" value="{{ settings.phone_primary or '+201099999999' }}" required class="w-full bg-deep border border-white/15 focus:border-gold rounded-xl px-4 py-2.5 text-xs text-white font-mono outline-none">
+        </div>
+
+        <!-- Secondary Phone -->
+        <div>
+          <label class="block text-xs font-bold text-gray-300 mb-1">هاتف إضافي للمبيعات</label>
+          <input type="text" name="phone_secondary" value="{{ settings.phone_secondary or '+20223456789' }}" class="w-full bg-deep border border-white/15 focus:border-gold rounded-xl px-4 py-2.5 text-xs text-white font-mono outline-none">
+        </div>
+
+        <!-- Email Contact -->
+        <div>
+          <label class="block text-xs font-bold text-gray-300 mb-1">البريد الإلكتروني الرسمي *</label>
+          <input type="email" name="email_contact" value="{{ settings.email_contact or 'info@motora.eg' }}" required class="w-full bg-deep border border-white/15 focus:border-gold rounded-xl px-4 py-2.5 text-xs text-white outline-none">
+        </div>
+
+        <!-- Working Hours AR -->
+        <div>
+          <label class="block text-xs font-bold text-gray-300 mb-1">مواعيد العمل (بالعربية) *</label>
+          <input type="text" name="working_hours_ar" value="{{ settings.working_hours_ar or 'السبت - الخميس: 10:00 ص - 10:00 م' }}" required class="w-full bg-deep border border-white/15 focus:border-gold rounded-xl px-4 py-2.5 text-xs text-white outline-none">
+        </div>
+
+        <!-- Working Hours EN -->
+        <div>
+          <label class="block text-xs font-bold text-gray-300 mb-1">Working Hours (English) *</label>
+          <input type="text" name="working_hours_en" value="{{ settings.working_hours_en or 'Sat - Thu: 10:00 AM - 10:00 PM' }}" required class="w-full bg-deep border border-white/15 focus:border-gold rounded-xl px-4 py-2.5 text-xs text-white outline-none" dir="ltr">
+        </div>
+
+      </div>
+
+      <!-- Showroom Address -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div>
+          <label class="block text-xs font-bold text-gray-300 mb-1">عنوان المعرض بالقاهرة (بالعربية) *</label>
+          <input type="text" name="cairo_showroom_address_ar" value="{{ settings.cairo_showroom_address_ar or 'محور 26 يوليو، مدخل الشيخ زايد 1، الجيزة - القاهرة' }}" required class="w-full bg-deep border border-white/15 focus:border-gold rounded-xl px-4 py-2.5 text-xs text-white outline-none">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-gray-300 mb-1">Cairo Showroom Address (English) *</label>
+          <input type="text" name="cairo_showroom_address_en" value="{{ settings.cairo_showroom_address_en or '26th of July Corridor, Sheikh Zayed Entrance 1, Cairo' }}" required class="w-full bg-deep border border-white/15 focus:border-gold rounded-xl px-4 py-2.5 text-xs text-white outline-none" dir="ltr">
+        </div>
+      </div>
+
+      <!-- Deposit Policy -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div>
+          <label class="block text-xs font-bold text-gray-300 mb-1">سياسة الحجز والجدية (بالعربية) *</label>
+          <textarea name="deposit_policy_ar" rows="3" required class="w-full bg-deep border border-white/15 focus:border-gold rounded-xl p-3 text-xs text-white outline-none">{{ settings.deposit_policy_ar or 'يتم سداد عربون جدية الحجز بموجب إيصال تعاقد رسمي قابل للاسترداد في حال عدم مطابقة الفحص الفني.' }}</textarea>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-gray-300 mb-1">Reservation Policy (English) *</label>
+          <textarea name="deposit_policy_en" rows="3" required class="w-full bg-deep border border-white/15 focus:border-gold rounded-xl p-3 text-xs text-white outline-none" dir="ltr">{{ settings.deposit_policy_en or 'Reservation deposits are refundable if vehicle fails inspection.' }}</textarea>
+        </div>
+      </div>
+
+      <!-- Admin Password Change -->
+      <div class="p-4 bg-white/5 rounded-2xl border border-white/10">
+        <label class="block text-xs font-bold text-amber-400 mb-1">
+          <i class="fas fa-key mr-1"></i> تغيير كلمة سر مدير المعرض (اختياري)
+        </label>
+        <div class="flex items-center gap-4">
+          <input type="password" name="admin_new_password" placeholder="اتركه فارغاً إذا كنت لا ترغب بتغيير كلمة المرور" class="flex-1 bg-deep border border-white/15 focus:border-gold rounded-xl px-4 py-2 text-xs text-white outline-none">
+          <span class="text-[11px] text-gray-500">6 أحرف على الأقل</span>
+        </div>
+      </div>
+
+      <!-- Save Button -->
+      <div class="pt-4 border-t border-white/10 flex justify-end">
+        <button type="submit" class="gold-btn px-8 py-3 rounded-xl text-xs font-black flex items-center gap-2 shadow-xl">
+          <i class="fas fa-save"></i>
+          <span>حفظ كافة الإعدادات والبيانات</span>
+        </button>
+      </div>
+
+    </form>
+
+  </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block title %}
+  {% if lang == 'ar' %}إنشاء حساب جديد | Syartk للسيارات الفاخرة{% else %}Create Account | Syartk Luxury Vehicles{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="min-h-[85vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+  
+  <!-- Ambient background glow -->
+  <div class="absolute -top-40 left-1/2 -translate-x-1/2 w-96 h-96 bg-gold/10 rounded-full blur-3xl pointer-events-none"></div>
+
+  <div class="max-w-md w-full glass-card p-8 sm:p-10 rounded-3xl border border-white/15 shadow-2xl relative z-10">
+    
+    <!-- Logo & Title -->
+    <div class="text-center mb-8">
+      <a href="/" class="inline-block mb-3">
+        <img src="/static/images/logo.svg" alt="Syartk" class="h-12 w-auto mx-auto filter drop-shadow">
+      </a>
+      <h2 class="text-xl sm:text-2xl font-black text-white">
+        {% if lang == 'ar' %}إنشاء حساب جديد في Syartk{% else %}Create Your Syartk Account{% endif %}
+      </h2>
+      <p class="text-xs text-gray-400 mt-1">
+        {% if lang == 'ar' %}سجّل الآن لمتابعة حجوزاتك ومسار شحن سياراتك خطوة بخطوة{% else %}Register to track your car reservations and international shipments{% endif %}
+      </p>
+    </div>
+
+    <!-- Error message if any -->
+    {% if error %}
+    <div class="mb-6 p-3 bg-red-500/10 border border-red-500/30 rounded-xl text-xs text-red-400 flex items-center gap-2">
+      <i class="fas fa-exclamation-circle text-sm flex-shrink-0"></i>
+      <span>{{ error }}</span>
+    </div>
+    {% endif %}
+
+    <!-- Registration Form -->
+    <form action="/register" method="POST" class="space-y-4">
+      
+      <!-- Name -->
+      <div>
+        <label class="block text-xs font-bold text-gray-300 mb-1">
+          {% if lang == 'ar' %}الاسم الكامل *{% else %}Full Name *{% endif %}
+        </label>
+        <div class="relative">
+          <i class="fas fa-user absolute right-3.5 top-3 text-gray-500 text-xs"></i>
+          <input type="text" name="name" required placeholder="{% if lang == 'ar' %}أحمد محمد{% else %}Ahmed Mohamed{% endif %}" class="w-full bg-deep border border-white/15 focus:border-gold rounded-xl pr-9 pl-4 py-2.5 text-xs text-white outline-none">
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div>
+        <label class="block text-xs font-bold text-gray-300 mb-1">
+          {% if lang == 'ar' %}البريد الإلكتروني *{% else %}Email Address *{% endif %}
+        </label>
+        <div class="relative">
+          <i class="fas fa-envelope absolute right-3.5 top-3 text-gray-500 text-xs"></i>
+          <input type="email" name="email" required placeholder="name@example.com" class="w-full bg-deep border border-white/15 focus:border-gold rounded-xl pr-9 pl-4 py-2.5 text-xs text-white outline-none" dir="ltr">
+        </div>
+      </div>
+
+      <!-- Phone -->
+      <div>
+        <label class="block text-xs font-bold text-gray-300 mb-1">
+          {% if lang == 'ar' %}رقم الموبايل / واتساب *{% else %}Phone / WhatsApp Number *{% endif %}
+        </label>
+        <div class="relative">
+          <i class="fas fa-phone absolute right-3.5 top-3 text-gray-500 text-xs"></i>
+          <input type="tel" name="phone" required placeholder="01125626292" class="w-full bg-deep border border-white/15 focus:border-gold rounded-xl pr-9 pl-4 py-2.5 text-xs text-white outline-none font-mono" dir="ltr">
+        </div>
+      </div>
+
+      <!-- City -->
+      <div>
+        <label class="block text-xs font-bold text-gray-300 mb-1">
+          {% if lang == 'ar' %}المدينة / المنطقة{% else %}City / Region{% endif %}
+        </label>
+        <div class="relative">
+          <i class="fas fa-map-marker-alt absolute right-3.5 top-3 text-gray-500 text-xs"></i>
+          <input type="text" name="city" value="مدينة العبور - القاهرة" placeholder="مدينة العبور - القاهرة" class="w-full bg-deep border border-white/15 focus:border-gold rounded-xl pr-9 pl-4 py-2.5 text-xs text-white outline-none">
+        </div>
+      </div>
+
+      <!-- Password -->
+      <div>
+        <label class="block text-xs font-bold text-gray-300 mb-1">
+          {% if lang == 'ar' %}كلمة المرور *{% else %}Password *{% endif %}
+        </label>
+        <div class="relative">
+          <i class="fas fa-lock absolute right-3.5 top-3 text-gray-500 text-xs"></i>
+          <input type="password" name="password" required minlength="6" placeholder="••••••••" class="w-full bg-deep border border-white/15 focus:border-gold rounded-xl pr-9 pl-4 py-2.5 text-xs text-white outline-none" dir="ltr">
+        </div>
+        <span class="text-[10px] text-gray-500 mt-1 block">{% if lang == 'ar' %}6 أحرف أو أرقام على الأقل{% else %}At least 6 characters{% endif %}</span>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="pt-2">
+        <button type="submit" class="w-full gold-btn py-3 rounded-xl text-xs font-black shadow-lg shadow-gold/20 flex items-center justify-center gap-2 hover:scale-[1.02] transition transform">
+          <i class="fas fa-user-plus"></i>
+          <span>{% if lang == 'ar' %}إنشاء الحساب الآن{% else %}Create Account{% endif %}</span>
+        </button>
+      </div>
+
+    </form>
+
+    <!-- Sign In Link -->
+    <div class="mt-6 pt-6 border-t border-white/10 text-center text-xs text-gray-400">
+      {% if lang == 'ar' %}
+        لديك حساب بالفعل في Syartk؟
+        <a href="/login" class="text-gold font-bold hover:underline mr-1">تسجيل الدخول &larr;</a>
+      {% else %}
+        Already have an account?
+        <a href="/login" class="text-gold font-bold hover:underline ml-1">Sign In &rarr;</a>
+      {% endif %}
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}

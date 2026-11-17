@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}لوحة تحكم مالك المنصة{% endblock %} | SYARTK Admin | سيارتك</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            gold: '#C5A880',
+            'gold-light': '#E0CAAA',
+            'gold-dark': '#9A7D56',
+            charcoal: '#0F1117',
+            deep: '#07080A',
+            card: '#14161F'
+          },
+          fontFamily: {
+            sans: ['Cairo', 'Outfit', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/static/css/style.css">
+  {% block extra_head %}{% endblock %}
+</head>
+<body class="bg-deep text-gray-100 min-h-screen flex antialiased selection:bg-gold selection:text-black">
+
+  <!-- ADMIN SIDEBAR -->
+  <aside class="w-64 bg-black/90 border-l border-white/10 flex flex-col justify-between hidden md:flex sticky top-0 h-screen z-40">
+    <div>
+      <!-- Brand Logo in Admin -->
+      <div class="p-6 border-b border-white/10 flex items-center justify-between">
+        <a href="/admin/dashboard" class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-lg bg-gold text-black flex items-center justify-center font-black font-mono shadow-md shadow-gold/20">S</div>
+          <div>
+            <span class="text-xl font-black text-white tracking-widest font-mono">SYARTK <span class="text-sm font-bold text-gold">(سيارتك)</span></span>
+            <span class="text-[9px] uppercase tracking-wider text-gold font-bold block -mt-1">ADMIN CONSOLE</span>
+          </div>
+        </a>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="p-4 space-y-1.5 text-xs font-semibold">
+        <a href="/admin/dashboard" class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition {% if request.url.path == '/admin/dashboard' %}bg-gold text-black font-bold shadow-md shadow-gold/20{% else %}text-gray-300 hover:bg-white/5 hover:text-gold{% endif %}">
+          <i class="fas fa-chart-line text-sm w-5"></i>
+          <span>لوحة المؤشرات العامة</span>
+        </a>
+
+        <a href="/admin/vehicles" class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition {% if request.url.path == '/admin/vehicles' %}bg-gold text-black font-bold shadow-md shadow-gold/20{% else %}text-gray-300 hover:bg-white/5 hover:text-gold{% endif %}">
+          <i class="fas fa-car text-sm w-5"></i>
+          <span>إدارة أسطول السيارات</span>
+        </a>
+
+        <a href="/admin/vehicles/new" class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition {% if request.url.path == '/admin/vehicles/new' %}bg-gold text-black font-bold shadow-md shadow-gold/20{% else %}text-gray-300 hover:bg-white/5 hover:text-gold{% endif %}">
+          <i class="fas fa-plus-circle text-sm w-5 text-emerald-400"></i>
+          <span>إضافة سيارة جديدة</span>
+        </a>
+
+        <a href="/admin/inventory" class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition {% if request.url.path == '/admin/inventory' %}bg-gold text-black font-bold shadow-md shadow-gold/20{% else %}text-gray-300 hover:bg-white/5 hover:text-gold{% endif %}">
+          <i class="fas fa-warehouse text-sm w-5"></i>
+          <span>المخزون والكميات</span>
+        </a>
+
+        <a href="/admin/bookings" class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition {% if request.url.path == '/admin/bookings' %}bg-gold text-black font-bold shadow-md shadow-gold/20{% else %}text-gray-300 hover:bg-white/5 hover:text-gold{% endif %}">
+          <i class="fas fa-calendar-check text-sm w-5"></i>
+          <span>طلبات الحجز والعملاء</span>
+        </a>
+
+        <a href="/admin/tracking" class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition {% if '/admin/tracking' in request.url.path %}bg-gold text-black font-bold shadow-md shadow-gold/20{% else %}text-gray-300 hover:bg-white/5 hover:text-gold{% endif %}">
+          <i class="fas fa-shipping-fast text-sm w-5"></i>
+          <span>تتبع الشحنات والمراحل الـ 9</span>
+        </a>
+
+        <a href="/admin/settings" class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition {% if request.url.path == '/admin/settings' %}bg-gold text-black font-bold shadow-md shadow-gold/20{% else %}text-gray-300 hover:bg-white/5 hover:text-gold{% endif %}">
+          <i class="fas fa-cog text-sm w-5"></i>
+          <span>إعدادات الصالة والموقع</span>
+        </a>
+      </nav>
+    </div>
+
+    <!-- Bottom Actions -->
+    <div class="p-4 border-t border-white/10 space-y-2">
+      <a href="/" target="_blank" class="flex items-center justify-between px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs text-gray-300 transition">
+        <span class="flex items-center gap-2">
+          <i class="fas fa-external-link-alt text-gold"></i>
+          <span>مشاهدة الموقع الحي</span>
+        </span>
+        <i class="fas fa-chevron-left text-[10px] text-gray-500"></i>
+      </a>
+
+      <a href="/admin/logout" class="flex items-center gap-2 px-3 py-2 rounded-xl text-red-400 hover:bg-red-500/10 text-xs transition">
+        <i class="fas fa-sign-out-alt"></i>
+        <span>تسجيل الخروج</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- MAIN ADMIN CONTENT AREA -->
+  <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+    
+    <!-- Top Bar -->
+    <header class="bg-black/80 backdrop-blur-md border-b border-white/10 px-6 py-3.5 flex items-center justify-between sticky top-0 z-30">
+      
+      <!-- Mobile Sidebar Toggle & Page Title -->
+      <div class="flex items-center gap-4">
+        <div class="text-xs text-gray-400">
+          <span class="text-emerald-400 font-bold flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span>نظام الإدارة الفردي الحصري (Owner Only)</span>
+          </span>
+        </div>
+      </div>
+
+      <!-- Admin Status & Live Site Button -->
+      <div class="flex items-center gap-4">
+        <a href="/" target="_blank" class="hidden sm:inline-flex items-center gap-1.5 text-xs text-gold hover:text-white px-3 py-1.5 rounded-lg border border-gold/30 bg-gold/5 transition">
+          <i class="fas fa-eye"></i>
+          <span>معاينة الموقع للعملاء</span>
+        </a>
+
+        <div class="flex items-center gap-2 border-r border-white/10 pr-4">
+          <div class="w-8 h-8 rounded-full bg-gold/20 border border-gold text-gold flex items-center justify-center font-bold text-xs">
+            <i class="fas fa-user-shield"></i>
+          </div>
+          <div class="text-xs text-start">
+            <span class="font-bold text-white block">{{ admin.username if admin else 'مالك سيارتك' }}</span>
+            <span class="text-[10px] text-gray-400 block">المالك والمسؤول الوحيد</span>
+          </div>
+        </div>
+      </div>
+
+    </header>
+
+    <!-- Admin Content Injected Here -->
+    <main class="p-6 sm:p-8 flex-1">
+      {% block content %}{% endblock %}
+    </main>
+
+    <!-- Admin Footer -->
+    <footer class="p-4 border-t border-white/5 text-center text-xs text-gray-500">
+      منصة سيارتك لاستيراد السيارات الفاخرة © 2026 - لوحة تحكم المالك الحصري
+    </footer>
+
+  </div>
+
+  <script src="/static/js/admin.js"></script>
+  {% block extra_scripts %}{% endblock %}
+</body>
+</html>

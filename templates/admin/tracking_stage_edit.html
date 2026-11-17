@@ -1,0 +1,119 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}تحديث مراحل الشحن: {{ booking.booking_code }}{% endblock %}
+
+{% block content %}
+
+<!-- Header -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-4 border-b border-white/10">
+  <div>
+    <nav class="flex items-center gap-2 text-xs text-gray-400 mb-1">
+      <a href="/admin/tracking" class="hover:text-gold">تتبع الشحنات</a>
+      <span>/</span>
+      <span class="text-white">{{ booking.booking_code }}</span>
+    </nav>
+    <h1 class="text-2xl font-black text-white flex items-center gap-3">
+      <span>تحديث المراحل التسع للشحنة:</span>
+      <span class="text-gold font-mono">{{ booking.booking_code }}</span>
+    </h1>
+    <p class="text-xs text-gray-400 mt-1">السيارة: {{ booking.brand }} {{ booking.model }} ({{ booking.year }}) - العميل: {{ booking.customer_name }}</p>
+  </div>
+
+  <div class="flex items-center gap-3">
+    <a href="/tracking/{{ booking.booking_code }}" target="_blank" class="outline-gold-btn px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5">
+      <i class="fas fa-external-link-alt"></i>
+      <span>معاينة صفحة العميل الحية</span>
+    </a>
+  </div>
+</div>
+
+<!-- 9 STAGES ACCORDION / FORMS -->
+<div class="space-y-6 max-w-4xl">
+  {% for stage in stages %}
+  <div class="glass-card rounded-3xl p-6 border {% if stage.status == 'completed' %}border-emerald-500/40{% elif stage.status == 'in_progress' %}border-amber-500/50 bg-amber-950/10{% else %}border-white/10 opacity-80{% endif %}">
+    
+    <div class="flex items-center justify-between mb-4 pb-3 border-b border-white/10">
+      <div class="flex items-center gap-3">
+        <span class="w-8 h-8 rounded-xl font-bold flex items-center justify-center text-xs {% if stage.status == 'completed' %}bg-emerald-500 text-black{% elif stage.status == 'in_progress' %}bg-amber-500 text-black animate-pulse{% else %}bg-gray-800 text-gray-400{% endif %}">
+          {{ stage.stage_number }}
+        </span>
+        <div>
+          <h3 class="text-sm font-bold text-white">{{ stage.stage_title_ar }}</h3>
+          <span class="text-[11px] text-gray-400">{{ stage.stage_title_en }}</span>
+        </div>
+      </div>
+
+      <span class="text-xs font-bold px-2.5 py-0.5 rounded-full {% if stage.status == 'completed' %}bg-emerald-500/20 text-emerald-400{% elif stage.status == 'in_progress' %}bg-amber-500/20 text-amber-300{% else %}bg-gray-800 text-gray-400{% endif %}">
+        {% if stage.status == 'completed' %}مكتملة{% elif stage.status == 'in_progress' %}جارية حالياً{% else %}في الانتظار{% endif %}
+      </span>
+    </div>
+
+    <!-- Edit Stage Form -->
+    <form action="/admin/tracking/{{ stage.id }}/update" method="POST" class="space-y-4">
+      
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        
+        <!-- Status -->
+        <div>
+          <label class="block text-xs font-bold text-gray-400 mb-1">حالة المرحلة *</label>
+          <select name="status_val" class="w-full bg-deep border border-white/15 rounded-xl px-3 py-2 text-xs text-white focus:border-gold outline-none">
+            <option value="pending" {% if stage.status == 'pending' %}selected{% endif %}>⚪ في الانتظار (Pending)</option>
+            <option value="in_progress" {% if stage.status == 'in_progress' %}selected{% endif %}>🟡 قيد التنفيذ الآن (In Progress)</option>
+            <option value="completed" {% if stage.status == 'completed' %}selected{% endif %}>🟢 مكتملة بنجاح (Completed)</option>
+          </select>
+        </div>
+
+        <!-- Location -->
+        <div>
+          <label class="block text-xs font-bold text-gray-400 mb-1">الموقع الجغرافي / الميناء</label>
+          <input type="text" name="location" value="{{ stage.location or '' }}" placeholder="مثال: ميناء الإسكندرية البحري" class="w-full bg-deep border border-white/15 rounded-xl px-3 py-2 text-xs text-white focus:border-gold outline-none">
+        </div>
+
+        <!-- Completion Date -->
+        <div>
+          <label class="block text-xs font-bold text-gray-400 mb-1">تاريخ ووقت الإنجاز</label>
+          <input type="text" name="completed_at" value="{{ stage.completed_at or '' }}" placeholder="YYYY-MM-DD HH:MM" class="w-full bg-deep border border-white/15 rounded-xl px-3 py-2 text-xs text-white font-mono focus:border-gold outline-none">
+        </div>
+
+      </div>
+
+      <!-- Notes / Findings -->
+      <div>
+        <label class="block text-xs font-bold text-gray-400 mb-1">ملاحظات وتقرير المرحلة (يظهر للعميل)</label>
+        <textarea name="notes" rows="2" placeholder="تفاصيل تقرير الفحص، رقم بوليصة الشحن، أو إجراءات الجمارك..." class="w-full bg-deep border border-white/15 rounded-xl p-3 text-xs text-white focus:border-gold outline-none leading-relaxed">{{ stage.notes or '' }}</textarea>
+      </div>
+
+      <!-- Proof Media Links / JSON -->
+      <div>
+        <label class="block text-xs font-bold text-gray-400 mb-1">
+          روابط صور الإثبات الرسمية (JSON Array أو روابط مفصولة بفواصل)
+        </label>
+        <input type="text" name="proof_media_json" value='{{ stage.proof_media or "[]" }}' class="w-full bg-deep border border-white/15 rounded-xl px-3 py-2 text-xs text-gold font-mono focus:border-gold outline-none" dir="ltr">
+        <span class="text-[10px] text-gray-500 block mt-1">مثال: ["https://image1.jpg", "https://image2.jpg"]</span>
+      </div>
+
+      <!-- Evidence Photos Thumbnails Preview -->
+      {% if stage.proof_media_list and stage.proof_media_list|length > 0 %}
+      <div class="flex flex-wrap gap-2 pt-2">
+        {% for url in stage.proof_media_list %}
+        <div class="w-16 h-16 rounded-xl overflow-hidden border border-white/20 bg-black">
+          <img src="{{ url }}" alt="" class="w-full h-full object-cover">
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <div class="pt-2 flex justify-end">
+        <button type="submit" class="gold-btn px-5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow">
+          <i class="fas fa-save"></i>
+          <span>حفظ وتحديث المرحلة #{{ stage.stage_number }}</span>
+        </button>
+      </div>
+
+    </form>
+
+  </div>
+  {% endfor %}
+</div>
+
+{% endblock %}

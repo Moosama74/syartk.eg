@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تسجيل دخول مالك المنصة | SYARTK (سيارتك) Admin Login</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            gold: '#C5A880',
+            deep: '#07080A',
+            card: '#14161F'
+          },
+          fontFamily: {
+            sans: ['Cairo', 'Outfit', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="bg-deep text-gray-100 min-h-screen flex items-center justify-center p-4 antialiased">
+
+  <div class="w-full max-w-md">
+    
+    <!-- Branding Header -->
+    <div class="text-center mb-8">
+      <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-gold-light via-gold to-gold-dark text-black font-black text-2xl flex items-center justify-center mx-auto mb-3 shadow-2xl shadow-gold/20 font-mono">
+        M
+      </div>
+      <h1 class="text-2xl font-black text-white tracking-widest font-mono">SYARTK (سيارتك)</h1>
+      <p class="text-xs text-gold font-bold uppercase tracking-wider mt-1">بوابة الدخول الخاصة بمالك الصالة</p>
+      <p class="text-[11px] text-gray-400 mt-1">منصة خاصة بإدارة واحدة فقط (Single Admin Only)</p>
+    </div>
+
+    <!-- Login Card -->
+    <div class="glass-card rounded-3xl p-8 border border-white/15 shadow-2xl">
+      
+      {% if error %}
+      <div class="mb-6 p-3 bg-red-500/10 border border-red-500/30 rounded-xl text-xs text-red-300 text-center flex items-center justify-center gap-2">
+        <i class="fas fa-exclamation-circle"></i>
+        <span>{{ error }}</span>
+      </div>
+      {% endif %}
+
+      <form action="/admin/login" method="POST" class="space-y-5">
+        <div>
+          <label class="block text-xs font-bold text-gray-300 mb-1.5">
+            <i class="fas fa-user text-gold mr-1"></i>
+            <span>اسم المستخدم (Username)</span>
+          </label>
+          <input type="text" name="username" value="admin" required class="w-full bg-deep border border-white/15 rounded-xl px-4 py-3 text-sm text-white focus:border-gold outline-none" dir="ltr">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-gray-300 mb-1.5">
+            <i class="fas fa-lock text-gold mr-1"></i>
+            <span>كلمة المرور (Password)</span>
+          </label>
+          <input type="password" name="password" value="motora2026admin" required class="w-full bg-deep border border-white/15 rounded-xl px-4 py-3 text-sm text-white focus:border-gold outline-none" dir="ltr">
+        </div>
+
+        <button type="submit" class="w-full gold-btn py-3.5 rounded-xl text-xs font-bold shadow-xl flex items-center justify-center gap-2 transition">
+          <i class="fas fa-sign-in-alt"></i>
+          <span>تسجيل الدخول إلى لوحة التحكم</span>
+        </button>
+      </form>
+
+      <!-- Default Credentials Helper Card -->
+      <div class="mt-8 pt-6 border-t border-white/10 text-center text-[11px] text-gray-400">
+        <p class="mb-1 text-gold font-semibold">بيانات الدخول الافتراضية:</p>
+        <p class="font-mono text-gray-300">Username: <span class="text-white font-bold">admin</span></p>
+        <p class="font-mono text-gray-300">Password: <span class="text-white font-bold">motora2026admin</span></p>
+      </div>
+
+    </div>
+
+    <!-- Back to public showroom -->
+    <div class="text-center mt-6">
+      <a href="/" class="text-xs text-gray-400 hover:text-gold transition">
+        <i class="fas fa-arrow-right ml-1"></i> العودة للموقع ومعرض السيارات
+      </a>
+    </div>
+
+  </div>
+
+</body>
+</html>

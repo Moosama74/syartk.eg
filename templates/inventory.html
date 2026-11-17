@@ -1,0 +1,246 @@
+{% extends "base.html" %}
+
+{% block title %}
+  {% if lang == 'ar' %}معرض السيارات المستوردة المتاحة | Syartk{% else %}Available Imported Fleet Showcase | Syartk{% endif %}
+{% endblock %}
+
+{% block content %}
+
+<!-- Header Banner -->
+<div class="bg-charcoal/80 border-b border-white/10 py-12">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div>
+        <nav class="flex items-center gap-2 text-xs text-gray-400 mb-2">
+          <a href="/" class="hover:text-gold">{% if lang == 'ar' %}الرئيسية{% else %}Home{% endif %}</a>
+          <span>/</span>
+          <span class="text-white">{% if lang == 'ar' %}معرض السيارات{% else %}Showcase{% endif %}</span>
+        </nav>
+        <h1 class="text-3xl sm:text-4xl font-extrabold text-white">
+          {% if lang == 'ar' %}أسطول السيارات المستوردة الفاخرة{% else %}Exclusive Imported Luxury Fleet{% endif %}
+        </h1>
+        <p class="text-gray-400 text-xs mt-1">
+          {% if lang == 'ar' %}
+            جميع السيارات تخضع لفحص فابريكة شامل معتمد وجاهزة للشحن المباشر إلى مصر.
+          {% else %}
+            All vehicles inspected, factory verified, and eligible for immediate Egypt shipping.
+          {% endif %}
+        </p>
+      </div>
+
+      <!-- Total count pill -->
+      <div class="bg-black/50 border border-gold/30 px-4 py-2 rounded-xl text-xs font-mono text-gold self-start md:self-auto">
+        <i class="fas fa-car mr-1.5"></i>
+        <span>{{ vehicles|length }} {% if lang == 'ar' %}سيارة معروضة{% else %}Vehicles Listed{% endif %}</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Main Catalog Container -->
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+  
+  <!-- FILTER BAR -->
+  <div class="glass-panel p-5 rounded-2xl mb-8 border border-white/15">
+    <form action="/vehicles" method="GET" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+      
+      <!-- Brand Filter -->
+      <div>
+        <label class="block text-xs font-bold text-gray-400 mb-1">{% if lang == 'ar' %}الماركة{% else %}Brand{% endif %}</label>
+        <select name="brand" class="w-full bg-deep border border-white/15 rounded-lg px-3 py-2 text-xs text-white focus:border-gold outline-none">
+          <option value="">{% if lang == 'ar' %}جميع الماركات{% else %}All Brands{% endif %}</option>
+          {% for b in all_brands %}
+          <option value="{{ b }}" {% if selected_brand == b %}selected{% endif %}>{{ b }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <!-- Origin Country Filter -->
+      <div>
+        <label class="block text-xs font-bold text-gray-400 mb-1">{% if lang == 'ar' %}بلد الاستيراد{% else %}Import Origin{% endif %}</label>
+        <select name="origin" class="w-full bg-deep border border-white/15 rounded-lg px-3 py-2 text-xs text-white focus:border-gold outline-none">
+          <option value="">{% if lang == 'ar' %}جميع الدول{% else %}All Origins{% endif %}</option>
+          {% for o in all_origins %}
+          <option value="{{ o }}" {% if selected_origin == o %}selected{% endif %}>{{ o | flag }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <!-- Budget Filter -->
+      <div>
+        <label class="block text-xs font-bold text-gray-400 mb-1">{% if lang == 'ar' %}الميزانية التقديرية{% else %}Budget Category{% endif %}</label>
+        <select name="budget" class="w-full bg-deep border border-white/15 rounded-lg px-3 py-2 text-xs text-white focus:border-gold outline-none">
+          <option value="">{% if lang == 'ar' %}جميع الأسعار{% else %}All Budgets{% endif %}</option>
+          <option value="under_3m" {% if selected_budget == 'under_3m' %}selected{% endif %}>{% if lang == 'ar' %}أقل من 3 مليون ج.م{% else %}Under 3M EGP{% endif %}</option>
+          <option value="3m_6m" {% if selected_budget == '3m_6m' %}selected{% endif %}>3 - 6 {% if lang == 'ar' %}مليون ج.م{% else %}Million EGP{% endif %}</option>
+          <option value="6m_10m" {% if selected_budget == '6m_10m' %}selected{% endif %}>6 - 10 {% if lang == 'ar' %}مليون ج.م{% else %}Million EGP{% endif %}</option>
+          <option value="above_10m" {% if selected_budget == 'above_10m' %}selected{% endif %}>{% if lang == 'ar' %}فوق 10 مليون ج.م{% else %}Above 10M EGP{% endif %}</option>
+        </select>
+      </div>
+
+      <!-- Sort By -->
+      <div>
+        <label class="block text-xs font-bold text-gray-400 mb-1">{% if lang == 'ar' %}الترتيب حسب{% else %}Sort By{% endif %}</label>
+        <select name="sort" class="w-full bg-deep border border-white/15 rounded-lg px-3 py-2 text-xs text-white focus:border-gold outline-none">
+          <option value="newest" {% if selected_sort == 'newest' %}selected{% endif %}>{% if lang == 'ar' %}الأحدث وصولاً{% else %}Newest Arrivals{% endif %}</option>
+          <option value="price_asc" {% if selected_sort == 'price_asc' %}selected{% endif %}>{% if lang == 'ar' %}السعر: من الأقل للأعلى{% else %}Price: Low to High{% endif %}</option>
+          <option value="price_desc" {% if selected_sort == 'price_desc' %}selected{% endif %}>{% if lang == 'ar' %}السعر: من الأعلى للأقل{% else %}Price: High to Low{% endif %}</option>
+          <option value="mileage_asc" {% if selected_sort == 'mileage_asc' %}selected{% endif %}>{% if lang == 'ar' %}أقل كيلومترات{% else %}Lowest Mileage{% endif %}</option>
+        </select>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex items-end gap-2">
+        <button type="submit" class="flex-1 gold-btn py-2 px-3 rounded-lg text-xs font-bold h-[34px] flex items-center justify-center gap-1.5">
+          <i class="fas fa-filter"></i>
+          <span>{% if lang == 'ar' %}تطبيق{% else %}Apply{% endif %}</span>
+        </button>
+        <a href="/vehicles" class="bg-white/10 hover:bg-white/20 text-gray-300 py-2 px-3 rounded-lg text-xs font-bold h-[34px] flex items-center justify-center">
+          <i class="fas fa-undo"></i>
+        </a>
+      </div>
+
+    </form>
+  </div>
+
+  <!-- VEHICLES GRID -->
+  {% if vehicles %}
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    {% for car in vehicles %}
+    <div class="glass-card rounded-2xl overflow-hidden flex flex-col group">
+      
+      <!-- Image & Badges -->
+      <div class="car-card-img-container aspect-[16/10] bg-black relative">
+        <img src="{{ car.cover_image or '/static/images/car-placeholder.jpg' }}" alt="{{ car.brand }} {{ car.model }}" class="w-full h-full object-cover">
+        <div class="absolute inset-0 bg-gradient-to-t from-deep via-transparent to-black/30"></div>
+
+        <!-- Badges -->
+        <div class="absolute top-3 right-3 flex flex-col gap-1.5 items-end">
+          <span class="badge-origin px-2.5 py-1 rounded-md text-[11px] font-bold">
+            {{ car.country_of_origin | flag }}
+          </span>
+          {% if car.status == 'available' %}
+            <span class="badge-available px-2.5 py-0.5 rounded text-[10px] font-bold">
+              {% if lang == 'ar' %}متاح للحجز{% else %}Available{% endif %}
+            </span>
+          {% elif car.status == 'reserved' %}
+            <span class="badge-reserved px-2.5 py-0.5 rounded text-[10px] font-bold">
+              {% if lang == 'ar' %}محجوز مؤقتاً{% else %}Reserved{% endif %}
+            </span>
+          {% elif car.status == 'sold' %}
+            <span class="badge-sold px-2.5 py-0.5 rounded text-[10px] font-bold">
+              {% if lang == 'ar' %}تم البيع{% else %}Sold Out{% endif %}
+            </span>
+          {% endif %}
+        </div>
+
+        {% if car.is_special_offer %}
+        <div class="absolute top-3 left-3 bg-red-600/90 text-white font-bold text-[10px] px-2.5 py-1 rounded uppercase tracking-wider shadow">
+          {% if lang == 'ar' %}عرض خاص{% else %}Special Offer{% endif %}
+        </div>
+        {% endif %}
+
+        <div class="absolute bottom-3 right-3 text-white/90 text-[11px] bg-black/60 backdrop-blur-md px-2.5 py-1 rounded flex items-center gap-1.5">
+          <i class="fas fa-clock text-gold"></i>
+          <span>{{ car.expected_delivery_time }}</span>
+        </div>
+      </div>
+
+      <!-- Card Details -->
+      <div class="p-6 flex-1 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between text-xs text-gray-400 mb-1">
+            <span class="font-bold text-gold uppercase tracking-wider">{{ car.brand }}</span>
+            <span class="font-mono">{{ car.year }}</span>
+          </div>
+
+          <h3 class="text-xl font-bold text-white group-hover:text-gold transition">
+            <a href="/vehicle/{{ car.slug }}">{{ car.brand }} {{ car.model }}</a>
+          </h3>
+          <p class="text-xs text-gray-400 mt-1 mb-4">{{ car.trim }}</p>
+
+          <!-- Specs -->
+          <div class="grid grid-cols-2 gap-2 py-3 border-y border-white/10 text-xs text-gray-300 mb-4">
+            <div class="flex items-center gap-1.5">
+              <i class="fas fa-tachometer-alt text-gold text-xs"></i>
+              <span>{{ car.mileage | number }} {% if lang == 'ar' %}كم{% else %}km{% endif %}</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <i class="fas fa-cogs text-gold text-xs"></i>
+              <span class="truncate">{{ car.transmission }}</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <i class="fas fa-gas-pump text-gold text-xs"></i>
+              <span class="truncate">{{ car.fuel_type }}</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <i class="fas fa-fingerprint text-gold text-xs"></i>
+              <span class="truncate font-mono">VIN: {{ car.vin[-6:] }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pricing & CTAs -->
+        <div>
+          <div class="flex items-baseline justify-between mb-4">
+            <div>
+              <span class="text-[10px] text-gray-400 block uppercase">{% if lang == 'ar' %}السعر الإجمالي في مصر{% else %}Total Price in Egypt{% endif %}</span>
+              <span class="text-2xl font-black text-white font-mono">{{ car.selling_price_egp | currency(lang) }}</span>
+            </div>
+            {% if car.reservation_deposit_egp > 0 %}
+            <div class="text-end">
+              <span class="text-[10px] text-gray-400 block">{% if lang == 'ar' %}عربون الحجز{% else %}Deposit{% endif %}</span>
+              <span class="text-xs font-bold text-gold font-mono">{{ car.reservation_deposit_egp | currency(lang) }}</span>
+            </div>
+            {% endif %}
+          </div>
+
+          <div class="flex items-center gap-2">
+            <a href="/vehicle/{{ car.slug }}" class="flex-1 text-center bg-white/10 hover:bg-white/20 text-white font-bold py-2.5 px-3 rounded-lg text-xs transition">
+              {% if lang == 'ar' %}التفاصيل الكاملة{% else %}View Details{% endif %}
+            </a>
+
+            {% if car.status == 'available' and car.units_available > 0 %}
+            <button type="button" class="btn-open-reserve flex-1 gold-btn py-2.5 px-3 rounded-lg text-xs font-bold text-center"
+                    data-vehicle-id="{{ car.id }}"
+                    data-vehicle-title="{{ car.brand }} {{ car.model }} {{ car.year }}"
+                    data-vehicle-price="{{ car.selling_price_egp | currency(lang) }}"
+                    data-vehicle-deposit="{{ car.reservation_deposit_egp | currency(lang) }}">
+              {% if lang == 'ar' %}احجز الآن{% else %}Reserve{% endif %}
+            </button>
+            {% else %}
+            <a href="https://wa.me/{{ settings.whatsapp_number }}?text=طلب توفير سيارة مماثلة: {{ car.brand }} {{ car.model }}" target="_blank" class="flex-1 text-center bg-gray-800 text-gray-400 py-2.5 px-3 rounded-lg text-xs">
+              {% if lang == 'ar' %}طلب استيراد مماثل{% else %}Request Import{% endif %}
+            </a>
+            {% endif %}
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <!-- Empty State -->
+  <div class="text-center py-20 glass-panel rounded-2xl border border-white/10">
+    <div class="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center text-gray-400 text-3xl mx-auto mb-4">
+      <i class="fas fa-search"></i>
+    </div>
+    <h3 class="text-xl font-bold text-white mb-2">{% if lang == 'ar' %}لم يتم العثور على سيارات مطابقة لخيارات البحث{% else %}No vehicles matching your search criteria{% endif %}</h3>
+    <p class="text-xs text-gray-400 max-w-md mx-auto mb-6">
+      {% if lang == 'ar' %}
+        يمكنك إعادة ضبط الفلاتر أو التواصل المباشر مع مالك صالة Syartk لاستيراد السيارة المحددة التي تبحث عنها فوراً.
+      {% else %}
+        You can reset filters or contact Syartk owner directly to import your custom requested model.
+      {% endif %}
+    </p>
+    <a href="/vehicles" class="gold-btn px-6 py-2.5 rounded-lg text-xs font-bold">
+      {% if lang == 'ar' %}إعادة ضبط الفلاتر{% else %}Reset Filters{% endif %}
+    </a>
+  </div>
+  {% endif %}
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,117 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}إدارة المخزون والكميات المتاحة{% endblock %}
+
+{% block content %}
+
+<!-- Header -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+  <div>
+    <h1 class="text-2xl font-extrabold text-white">إدارة المخزون والكميات (Inventory Control)</h1>
+    <p class="text-xs text-gray-400 mt-1">مراقبة المخزون، ضبط الوحدات المتاحة، ومنع الحجز عند نفاد الكمية</p>
+  </div>
+</div>
+
+<!-- Stock Filter Tabs -->
+<div class="flex flex-wrap items-center gap-2 mb-6 text-xs">
+  <a href="/admin/inventory" class="px-3.5 py-2 rounded-xl {% if not filter_type %}bg-gold text-black font-bold{% else %}bg-white/5 text-gray-400 hover:text-white{% endif %} transition">
+    جميع سيارات المخزون
+  </a>
+  <a href="/admin/inventory?filter_type=low_stock" class="px-3.5 py-2 rounded-xl {% if filter_type == 'low_stock' %}bg-amber-500 text-black font-bold{% else %}bg-white/5 text-gray-400 hover:text-white{% endif %} transition">
+    ⚠️ مخزون حرج (1 وحدة أو أقل)
+  </a>
+  <a href="/admin/inventory?filter_type=out_of_stock" class="px-3.5 py-2 rounded-xl {% if filter_type == 'out_of_stock' %}bg-red-500 text-white font-bold{% else %}bg-white/5 text-gray-400 hover:text-white{% endif %} transition">
+    🚫 نفدت الكمية (0 متاح)
+  </a>
+  <a href="/admin/inventory?filter_type=reserved" class="px-3.5 py-2 rounded-xl {% if filter_type == 'reserved' %}bg-blue-500 text-white font-bold{% else %}bg-white/5 text-gray-400 hover:text-white{% endif %} transition">
+    🔒 محجوزة للعملاء
+  </a>
+</div>
+
+<!-- Inventory Grid / Table -->
+<div class="glass-card rounded-3xl overflow-hidden border border-white/15">
+  <div class="overflow-x-auto">
+    <table class="w-full text-right text-xs text-gray-300">
+      <thead class="bg-black/60 text-gray-400 uppercase tracking-wider text-[11px] border-b border-white/10">
+        <tr>
+          <th class="p-4">السيارة</th>
+          <th class="p-4">الشاسيه (VIN)</th>
+          <th class="p-4">السعر الحالي (ج.م)</th>
+          <th class="p-4">حالة المخزون الحالية</th>
+          <th class="p-4">تعديل عدد الوحدات المتاحة</th>
+          <th class="p-4 text-center">حفظ التحديث</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-white/5">
+        {% for car in vehicles %}
+        <tr class="hover:bg-white/[0.02] transition">
+          
+          <!-- Car & Image -->
+          <td class="p-4">
+            <div class="flex items-center gap-3">
+              <img src="{{ car.cover_image or '/static/images/car-placeholder.jpg' }}" alt="" class="w-12 h-9 rounded-lg object-cover bg-black flex-shrink-0 border border-white/10">
+              <div>
+                <a href="/vehicle/{{ car.slug }}" target="_blank" class="font-bold text-white hover:text-gold block">
+                  {{ car.brand }} {{ car.model }} ({{ car.year }})
+                </a>
+                <span class="text-[10px] text-gray-500">{{ car.country_of_origin | flag }}</span>
+              </div>
+            </div>
+          </td>
+
+          <!-- VIN -->
+          <td class="p-4 font-mono text-gold">{{ car.vin }}</td>
+
+          <!-- Price -->
+          <td class="p-4 font-mono text-white font-bold">
+            {{ car.selling_price_egp | currency('ar') }}
+          </td>
+
+          <!-- Current Stock State Badge -->
+          <td class="p-4">
+            {% if car.units_available == 0 %}
+              <span class="bg-red-500/15 text-red-400 border border-red-500/30 px-2.5 py-1 rounded-full text-[11px] font-bold">
+                غير متوفر بالمخزون (0)
+              </span>
+            {% elif car.units_available == 1 %}
+              <span class="bg-amber-500/15 text-amber-300 border border-amber-500/30 px-2.5 py-1 rounded-full text-[11px] font-bold">
+                آخر قطعة متبقية (1)
+              </span>
+            {% else %}
+              <span class="bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 px-2.5 py-1 rounded-full text-[11px] font-bold">
+                متوفر ({{ car.units_available }} وحدات)
+              </span>
+            {% endif %}
+          </td>
+
+          <!-- Update Stock Form -->
+          <form action="/admin/inventory/{{ car.id }}/update-stock" method="POST">
+            <td class="p-4">
+              <div class="flex items-center gap-2">
+                <input type="number" name="units_available" value="{{ car.units_available }}" min="0" max="100" required class="w-20 bg-black/60 border border-white/15 rounded-lg px-3 py-1.5 text-xs text-white font-mono focus:border-gold outline-none">
+                
+                <select name="status_val" class="bg-black/60 border border-white/15 rounded-lg px-2 py-1.5 text-xs text-gray-300 focus:border-gold outline-none">
+                  <option value="available" {% if car.status == 'available' %}selected{% endif %}>متاح</option>
+                  <option value="reserved" {% if car.status == 'reserved' %}selected{% endif %}>محجوز</option>
+                  <option value="sold" {% if car.status == 'sold' %}selected{% endif %}>تم البيع</option>
+                  <option value="hidden" {% if car.status == 'hidden' %}selected{% endif %}>مخفي</option>
+                </select>
+              </div>
+            </td>
+
+            <!-- Submit Button -->
+            <td class="p-4 text-center">
+              <button type="submit" class="gold-btn px-3 py-1.5 rounded-lg text-xs font-bold transition">
+                <i class="fas fa-check mr-1"></i> حفظ
+              </button>
+            </td>
+          </form>
+
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}

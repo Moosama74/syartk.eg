@@ -1,0 +1,78 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}إدارة تتبع الشحنات الدولية{% endblock %}
+
+{% block content %}
+
+<!-- Header -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+  <div>
+    <h1 class="text-2xl font-extrabold text-white">إدارة تتبع الشحنات (Live Shipments Tracking)</h1>
+    <p class="text-xs text-gray-400 mt-1">تحديث مراحل الشحن التسع ورفع صور الفحص والحاويات للعملاء</p>
+  </div>
+</div>
+
+<!-- Active Tracked Orders -->
+{% if tracked_orders %}
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+  {% for order in tracked_orders %}
+  <div class="glass-card rounded-3xl p-6 border border-white/15 flex flex-col justify-between hover:border-gold/40 transition">
+    
+    <div>
+      <div class="flex items-center justify-between mb-4">
+        <span class="text-xs font-mono font-bold text-gold bg-gold/10 px-2.5 py-1 rounded border border-gold/30">
+          {{ order.booking_code }}
+        </span>
+        <span class="text-[11px] font-bold text-emerald-400">
+          {{ order.completed_stages }} / 9 مراحل مكتملة
+        </span>
+      </div>
+
+      <div class="flex items-center gap-4 mb-4">
+        <img src="{{ order.cover_image or '/static/images/car-placeholder.jpg' }}" alt="" class="w-16 h-12 rounded-xl object-cover bg-black border border-white/10">
+        <div>
+          <h3 class="text-base font-bold text-white">{{ order.brand }} {{ order.model }} ({{ order.year }})</h3>
+          <p class="text-xs text-gray-400 font-mono">VIN: {{ order.vin }}</p>
+        </div>
+      </div>
+
+      <div class="p-3 bg-black/40 rounded-xl border border-white/5 text-xs text-gray-300 space-y-1 mb-4">
+        <div class="flex items-center justify-between">
+          <span class="text-gray-500">العميل:</span>
+          <span class="font-bold text-white">{{ order.customer_name }}</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-gray-500">المرحلة الجارية:</span>
+          <span class="font-bold text-amber-400">{{ order.current_stage_name or 'المرحلة قيد الإجراء' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="pt-4 border-t border-white/10 flex items-center justify-between gap-3">
+      <a href="/tracking/{{ order.booking_code }}" target="_blank" class="text-xs text-gray-400 hover:text-gold flex items-center gap-1">
+        <i class="fas fa-external-link-alt"></i>
+        <span>معاينة صفحة العميل</span>
+      </a>
+
+      <a href="/admin/tracking/{{ order.id }}" class="gold-btn px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow">
+        <i class="fas fa-edit"></i>
+        <span>تحديث المراحل ورفع الأدلة</span>
+      </a>
+    </div>
+
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="text-center py-20 glass-card rounded-3xl border border-white/10">
+  <div class="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center text-gray-500 text-2xl mx-auto mb-3">
+    <i class="fas fa-ship"></i>
+  </div>
+  <h3 class="text-lg font-bold text-white mb-1">لا توجد شحنات نشطة حالياً</h3>
+  <p class="text-xs text-gray-400 max-w-sm mx-auto">
+    عند اعتماد أي طلب حجز من صفحة الحجوزات، سيتم فتح مسار التتبع المباشر وإضافته هنا فوراً.
+  </p>
+</div>
+{% endif %}
+
+{% endblock %}

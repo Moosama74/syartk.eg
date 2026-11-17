@@ -1,0 +1,130 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}إدارة طلبات الحجز والعملاء{% endblock %}
+
+{% block content %}
+
+<!-- Header -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+  <div>
+    <h1 class="text-2xl font-extrabold text-white">طلبات الحجز والعملاء (Bookings & Leads)</h1>
+    <p class="text-xs text-gray-400 mt-1">مراجعة طلبات الحجز المباشرة، اعتماد العقود، وبدء مسار التتبع للشحنة</p>
+  </div>
+</div>
+
+<!-- Status Filters -->
+<div class="flex flex-wrap items-center gap-2 mb-6 text-xs">
+  <a href="/admin/bookings" class="px-3.5 py-2 rounded-xl {% if not status_filter %}bg-gold text-black font-bold{% else %}bg-white/5 text-gray-400 hover:text-white{% endif %} transition">
+    جميع الطلبات
+  </a>
+  <a href="/admin/bookings?status_filter=pending" class="px-3.5 py-2 rounded-xl {% if status_filter == 'pending' %}bg-amber-500 text-black font-bold{% else %}bg-white/5 text-gray-400 hover:text-white{% endif %} transition">
+    ⏳ طلبات قيد الانتظار (Pending)
+  </a>
+  <a href="/admin/bookings?status_filter=approved" class="px-3.5 py-2 rounded-xl {% if status_filter == 'approved' %}bg-emerald-500 text-black font-bold{% else %}bg-white/5 text-gray-400 hover:text-white{% endif %} transition">
+    ✅ تم التأكيد والاعتماد (Approved)
+  </a>
+  <a href="/admin/bookings?status_filter=active_tracking" class="px-3.5 py-2 rounded-xl {% if status_filter == 'active_tracking' %}bg-blue-500 text-white font-bold{% else %}bg-white/5 text-gray-400 hover:text-white{% endif %} transition">
+    🚢 جاري الشحن والتتبع (In Transit)
+  </a>
+  <a href="/admin/bookings?status_filter=completed" class="px-3.5 py-2 rounded-xl {% if status_filter == 'completed' %}bg-purple-500 text-white font-bold{% else %}bg-white/5 text-gray-400 hover:text-white{% endif %} transition">
+    🏆 تم التسليم للعميل (Delivered)
+  </a>
+</div>
+
+<!-- Bookings List -->
+{% if bookings %}
+<div class="space-y-4">
+  {% for b in bookings %}
+  <div class="glass-card rounded-3xl p-6 border border-white/10 hover:border-gold/30 transition">
+    <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+      
+      <!-- Left: Vehicle & Booking Identity -->
+      <div class="flex items-center gap-4">
+        <img src="{{ b.cover_image or '/static/images/car-placeholder.jpg' }}" alt="" class="w-20 h-16 rounded-2xl object-cover bg-black border border-white/10 flex-shrink-0">
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-xs font-mono font-bold text-gold bg-gold/10 px-2 py-0.5 rounded border border-gold/30">{{ b.booking_code }}</span>
+            <span class="text-[10px] text-gray-400 font-mono">VIN: {{ b.vin }}</span>
+          </div>
+          <h3 class="text-base font-bold text-white">{{ b.brand }} {{ b.model }} ({{ b.year }})</h3>
+          <p class="text-xs text-gray-400">السعر: <span class="font-bold text-white font-mono">{{ b.selling_price_egp | currency('ar') }}</span> | العربون: <span class="text-gold font-mono">{{ b.reservation_deposit_egp | currency('ar') }}</span></p>
+        </div>
+      </div>
+
+      <!-- Center: Customer Info -->
+      <div class="space-y-1 text-xs text-gray-300">
+        <div class="font-bold text-white text-sm flex items-center gap-2">
+          <i class="fas fa-user text-gold text-xs"></i>
+          <span>{{ b.customer_name }}</span>
+        </div>
+        <div class="flex items-center gap-3 text-gray-400">
+          <span><i class="fas fa-phone mr-1"></i> <span dir="ltr">{{ b.customer_phone }}</span></span>
+          {% if b.customer_city %}
+          <span>• {{ b.customer_city }}</span>
+          {% endif %}
+        </div>
+        {% if b.customer_email %}
+        <div class="text-[11px] text-gray-500 font-mono">{{ b.customer_email }}</div>
+        {% endif %}
+        {% if b.customer_notes %}
+        <div class="p-2 bg-black/40 rounded-lg text-[11px] text-gray-300 border border-white/5 mt-1 max-w-md">
+          <span class="text-gold font-semibold">ملاحظات العميل:</span> {{ b.customer_notes }}
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Right: Status Control & Actions -->
+      <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 self-stretch lg:self-auto">
+        
+        <!-- Status Updater Form -->
+        <form action="/admin/bookings/{{ b.id }}/status" method="POST" class="flex items-center gap-2">
+          <select name="new_status" class="bg-black/60 border border-white/15 rounded-xl px-3 py-2 text-xs text-white focus:border-gold outline-none">
+            <option value="pending" {% if b.status == 'pending' %}selected{% endif %}>⏳ قيد المراجعة (Pending)</option>
+            <option value="approved" {% if b.status == 'approved' %}selected{% endif %}>✅ معتمد (Approved)</option>
+            <option value="active_tracking" {% if b.status == 'active_tracking' %}selected{% endif %}>🚢 جاري التتبع (In Transit)</option>
+            <option value="completed" {% if b.status == 'completed' %}selected{% endif %}>🏆 تم التسليم (Delivered)</option>
+            <option value="rejected" {% if b.status == 'rejected' %}selected{% endif %}>❌ مرفوض / ملغي (Rejected)</option>
+          </select>
+
+          <input type="hidden" name="deposit_paid" value="1">
+          <button type="submit" class="bg-white/10 hover:bg-gold hover:text-black text-white px-3 py-2 rounded-xl text-xs font-bold transition" title="حفظ الحالة">
+            <i class="fas fa-check"></i>
+          </button>
+        </form>
+
+        <!-- Direct WhatsApp Chat -->
+        <a href="https://wa.me/{{ b.customer_phone.replace('+', '').replace(' ', '') }}?text=مرحباً أ/ {{ b.customer_name }}، بخصوص حجز سيارة {{ b.brand }} {{ b.model }} كود الحجز {{ b.booking_code }} عبر موتورا." target="_blank" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition">
+          <i class="fab fa-whatsapp text-sm"></i>
+          <span>واتساب</span>
+        </a>
+
+        <!-- Manage Tracking Timeline -->
+        <a href="/admin/tracking/{{ b.id }}" class="bg-blue-600/30 hover:bg-blue-600/50 text-blue-300 border border-blue-500/40 px-3.5 py-2 rounded-xl text-xs font-bold text-center transition flex items-center justify-center gap-1.5" title="إدارة مسار التتبع والصور">
+          <i class="fas fa-route"></i>
+          <span>التتبع</span>
+        </a>
+
+        <!-- Delete Booking -->
+        <form action="/admin/bookings/{{ b.id }}/delete" method="POST" onsubmit="return confirm('هل تريد حذف هذا الحجز نهائياً؟');">
+          <button type="submit" class="text-red-400 hover:text-red-300 p-2 rounded-xl hover:bg-red-500/10 transition" title="حذف">
+            <i class="fas fa-trash"></i>
+          </button>
+        </form>
+
+      </div>
+
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="text-center py-20 glass-card rounded-3xl border border-white/10">
+  <div class="w-14 h-14 rounded-full bg-white/5 flex items-center justify-center text-gray-500 text-2xl mx-auto mb-3">
+    <i class="fas fa-calendar-times"></i>
+  </div>
+  <h3 class="text-lg font-bold text-white mb-1">لا توجد طلبات حجز حالياً في هذا القسم</h3>
+  <p class="text-xs text-gray-400">ستظهر طلبات الحجز المباشرة للعملاء هنا فور تقديمها من الموقع.</p>
+</div>
+{% endif %}
+
+{% endblock %}

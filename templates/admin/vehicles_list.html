@@ -1,0 +1,156 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}إدارة أسطول السيارات{% endblock %}
+
+{% block content %}
+
+<!-- Header & Add Button -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+  <div>
+    <h1 class="text-2xl font-extrabold text-white">إدارة أسطول السيارات (Vehicles Fleet)</h1>
+    <p class="text-xs text-gray-400 mt-1">إضافة، تعديل، نسخ، وتحديث أسعار وحالات السيارات في المعرض دون قيود عددية</p>
+  </div>
+
+  <div class="flex items-center gap-3">
+    <a href="/admin/vehicles/new" class="gold-btn px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2">
+      <i class="fas fa-plus-circle"></i>
+      <span>إضافة سيارة جديدة</span>
+    </a>
+  </div>
+</div>
+
+<!-- FILTER & SEARCH BAR -->
+<div class="glass-panel p-4 rounded-2xl mb-6 border border-white/10 flex flex-col md:flex-row items-center justify-between gap-4">
+  
+  <!-- Status Tabs -->
+  <div class="flex flex-wrap items-center gap-2 text-xs">
+    <a href="/admin/vehicles" class="px-3 py-1.5 rounded-lg {% if not status_filter %}bg-gold text-black font-bold{% else %}bg-white/5 text-gray-400 hover:text-white{% endif %} transition">
+      الكل (All)
+    </a>
+    <a href="/admin/vehicles?status_filter=available" class="px-3 py-1.5 rounded-lg {% if status_filter == 'available' %}bg-emerald-500 text-black font-bold{% else %}bg-white/5 text-gray-400 hover:text-white{% endif %} transition">
+      المتاحة (Available)
+    </a>
+    <a href="/admin/vehicles?status_filter=reserved" class="px-3 py-1.5 rounded-lg {% if status_filter == 'reserved' %}bg-amber-500 text-black font-bold{% else %}bg-white/5 text-gray-400 hover:text-white{% endif %} transition">
+      المحجوزة (Reserved)
+    </a>
+    <a href="/admin/vehicles?status_filter=sold" class="px-3 py-1.5 rounded-lg {% if status_filter == 'sold' %}bg-red-500 text-white font-bold{% else %}bg-white/5 text-gray-400 hover:text-white{% endif %} transition">
+      المباعة (Sold)
+    </a>
+    <a href="/admin/vehicles?status_filter=hidden" class="px-3 py-1.5 rounded-lg {% if status_filter == 'hidden' %}bg-gray-700 text-white font-bold{% else %}bg-white/5 text-gray-400 hover:text-white{% endif %} transition">
+      المسودات والمخفية (Drafts)
+    </a>
+  </div>
+
+  <!-- Search input -->
+  <form action="/admin/vehicles" method="GET" class="w-full md:w-auto flex items-center gap-2">
+    {% if status_filter %}<input type="hidden" name="status_filter" value="{{ status_filter }}">{% endif %}
+    <input type="text" name="search" value="{{ search }}" placeholder="بحث بالماركة، الموديل، الشاسيه..." class="bg-black/60 border border-white/15 px-3 py-1.5 rounded-lg text-xs text-white focus:border-gold outline-none w-full md:w-64">
+    <button type="submit" class="bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-lg text-xs font-bold">
+      <i class="fas fa-search"></i>
+    </button>
+  </form>
+
+</div>
+
+<!-- VEHICLES TABLE -->
+<div class="glass-card rounded-3xl overflow-hidden border border-white/15">
+  <div class="overflow-x-auto">
+    <table class="w-full text-right text-xs text-gray-300">
+      <thead class="bg-black/60 text-gray-400 uppercase tracking-wider text-[11px] border-b border-white/10">
+        <tr>
+          <th class="p-4">السيارة والموديل</th>
+          <th class="p-4">الشاسيه (VIN) والمنشأ</th>
+          <th class="p-4">المخزون المتاح</th>
+          <th class="p-4">السعر (ج.م)</th>
+          <th class="p-4">الحالة (تعديل سريع)</th>
+          <th class="p-4 text-center">إجراءات الإدارة</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-white/5">
+        {% for car in vehicles %}
+        <tr class="hover:bg-white/[0.02] transition">
+          
+          <!-- Vehicle & Cover -->
+          <td class="p-4">
+            <div class="flex items-center gap-3">
+              <img src="{{ car.cover_image or '/static/images/car-placeholder.jpg' }}" alt="" class="w-14 h-10 rounded-lg object-cover bg-black flex-shrink-0 border border-white/10">
+              <div>
+                <a href="/vehicle/{{ car.slug }}" target="_blank" class="font-bold text-white hover:text-gold transition text-sm block">
+                  {{ car.brand }} {{ car.model }}
+                </a>
+                <span class="text-[11px] text-gray-400">{{ car.year }} • {{ car.trim }}</span>
+              </div>
+            </div>
+          </td>
+
+          <!-- VIN & Origin -->
+          <td class="p-4 font-mono">
+            <span class="text-gold font-bold block">{{ car.vin }}</span>
+            <span class="text-[10px] text-gray-400">{{ car.country_of_origin | flag }}</span>
+          </td>
+
+          <!-- Units Stock -->
+          <td class="p-4">
+            <span class="font-bold text-sm {% if car.units_available > 0 %}text-emerald-400{% else %}text-red-400{% endif %}">
+              {{ car.units_available }} / {{ car.units_total }}
+            </span>
+            <span class="text-[10px] text-gray-500 block">وحدات</span>
+          </td>
+
+          <!-- Price (Quick Editable Input) -->
+          <td class="p-4">
+            <div class="flex items-center gap-1.5">
+              <input type="number" step="1000" class="quick-price-input bg-black/60 border border-white/10 rounded px-2 py-1 text-xs text-white font-mono w-28 focus:border-gold outline-none transition" data-vehicle-id="{{ car.id }}" value="{{ car.selling_price_egp | int }}">
+              <span class="text-[10px] text-gray-400">ج.م</span>
+            </div>
+          </td>
+
+          <!-- Status (Quick Select Dropdown) -->
+          <td class="p-4">
+            <select class="quick-status-select bg-black/60 border border-white/15 rounded-lg px-2.5 py-1 text-xs text-white focus:border-gold outline-none transition" data-vehicle-id="{{ car.id }}">
+              <option value="available" {% if car.status == 'available' %}selected{% endif %}>🟢 متاحة (Available)</option>
+              <option value="reserved" {% if car.status == 'reserved' %}selected{% endif %}>🟡 محجوزة (Reserved)</option>
+              <option value="sold" {% if car.status == 'sold' %}selected{% endif %}>🔴 مباعة (Sold)</option>
+              <option value="hidden" {% if car.status == 'hidden' %}selected{% endif %}>⚪ مسودة / مخفية (Hidden)</option>
+            </select>
+          </td>
+
+          <!-- Action Buttons -->
+          <td class="p-4 text-center">
+            <div class="flex items-center justify-center gap-1.5">
+              
+              <!-- View Live -->
+              <a href="/vehicle/{{ car.slug }}" target="_blank" class="p-2 rounded-lg bg-white/5 hover:bg-white/15 text-gray-300 hover:text-white transition" title="عرض بالموقع">
+                <i class="fas fa-eye text-xs"></i>
+              </a>
+
+              <!-- Edit -->
+              <a href="/admin/vehicles/{{ car.id }}/edit" class="p-2 rounded-lg bg-gold/10 hover:bg-gold text-gold hover:text-black transition font-bold" title="تعديل كافة التفاصيل والوسائط">
+                <i class="fas fa-edit text-xs"></i>
+              </a>
+
+              <!-- Duplicate Button (One-click Clone) -->
+              <form action="/admin/vehicles/{{ car.id }}/duplicate" method="POST" class="inline" onsubmit="return confirm('هل تريد إنشاء نسخة مطابقة من هذه السيارة لتعديلها وتوفير الوقت؟');">
+                <button type="submit" class="p-2 rounded-lg bg-blue-500/10 hover:bg-blue-500 text-blue-400 hover:text-white transition" title="نسخ ومضاعفة السيارة (Duplicate)">
+                  <i class="fas fa-clone text-xs"></i>
+                </button>
+              </form>
+
+              <!-- Delete -->
+              <form action="/admin/vehicles/{{ car.id }}/delete" method="POST" class="inline" onsubmit="return confirm('تحذير: هل أنت متأكد من حذف هذه السيارة وجميع صورها نهائياً؟');">
+                <button type="submit" class="p-2 rounded-lg bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-white transition" title="حذف السيارة">
+                  <i class="fas fa-trash text-xs"></i>
+                </button>
+              </form>
+
+            </div>
+          </td>
+
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}

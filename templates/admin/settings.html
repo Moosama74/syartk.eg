@@ -1,0 +1,128 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}إعدادات الصالة والموقع{% endblock %}
+
+{% block content %}
+
+<!-- Header -->
+<div class="mb-8 pb-4 border-b border-white/10">
+  <h1 class="text-2xl font-black text-white">إعدادات صالة سيارتك والموقع الإلكتروني</h1>
+  <p class="text-xs text-gray-400 mt-1">تحديث أرقام الاتصال، رقم الواتساب، عنوان المعرض بالقاهرة، وسياسة العربون</p>
+</div>
+
+{% if success_msg %}
+<div class="mb-6 p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl text-emerald-400 text-xs flex items-center gap-2">
+  <i class="fas fa-check-circle text-base"></i>
+  <span>{{ success_msg }}</span>
+</div>
+{% endif %}
+
+<form action="/admin/settings" method="POST" class="space-y-8 max-w-4xl">
+  
+  <!-- CONTACT NUMBERS & WHATSAPP -->
+  <div class="glass-card rounded-3xl p-6 sm:p-8 border border-white/15">
+    <h3 class="text-base font-bold text-gold uppercase tracking-wider mb-6 flex items-center gap-2">
+      <i class="fas fa-phone-alt"></i>
+      <span>1. أرقام الاتصال وواتساب المباشر</span>
+    </h3>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+      <div>
+        <label class="block text-xs font-bold text-gray-300 mb-1">رقم الهاتف الأساسي (Primary Phone) *</label>
+        <input type="text" name="phone_primary" value="{{ settings.phone_primary }}" required class="w-full bg-deep border border-white/15 rounded-xl px-4 py-2.5 text-xs text-white font-mono focus:border-gold outline-none" dir="ltr">
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold text-gray-300 mb-1">رقم الهاتف الإضافي (Secondary Phone)</label>
+        <input type="text" name="phone_secondary" value="{{ settings.phone_secondary }}" class="w-full bg-deep border border-white/15 rounded-xl px-4 py-2.5 text-xs text-white font-mono focus:border-gold outline-none" dir="ltr">
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold text-gray-300 mb-1">رقم الواتساب الرسمي (بدون علامة + أو مسافات) *</label>
+        <input type="text" name="whatsapp_number" value="{{ settings.whatsapp_number }}" required class="w-full bg-deep border border-white/15 rounded-xl px-4 py-2.5 text-xs text-emerald-400 font-bold font-mono focus:border-gold outline-none" dir="ltr">
+        <span class="text-[10px] text-gray-500 mt-1 block">مثال لمصر: 201008894521</span>
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold text-gray-300 mb-1">البريد الإلكتروني للكونسيرج (Contact Email) *</label>
+        <input type="email" name="email_contact" value="{{ settings.email_contact }}" required class="w-full bg-deep border border-white/15 rounded-xl px-4 py-2.5 text-xs text-white font-mono focus:border-gold outline-none" dir="ltr">
+      </div>
+    </div>
+  </div>
+
+  <!-- CAIRO SHOWROOM LOCATION & HOURS -->
+  <div class="glass-card rounded-3xl p-6 sm:p-8 border border-white/15">
+    <h3 class="text-base font-bold text-gold uppercase tracking-wider mb-6 flex items-center gap-2">
+      <i class="fas fa-map-marker-alt"></i>
+      <span>2. عنوان صالة العرض وساعات العمل</span>
+    </h3>
+
+    <div class="space-y-4">
+      <div>
+        <label class="block text-xs font-bold text-gray-300 mb-1">عنوان الصالة بالعربية *</label>
+        <input type="text" name="cairo_showroom_address_ar" value="{{ settings.cairo_showroom_address_ar }}" required class="w-full bg-deep border border-white/15 rounded-xl px-4 py-2.5 text-xs text-white focus:border-gold outline-none">
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold text-gray-300 mb-1">عنوان الصالة بالإنجليزية (English Address) *</label>
+        <input type="text" name="cairo_showroom_address_en" value="{{ settings.cairo_showroom_address_en }}" required class="w-full bg-deep border border-white/15 rounded-xl px-4 py-2.5 text-xs text-white focus:border-gold outline-none" dir="ltr">
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-bold text-gray-300 mb-1">أوقات العمل بالعربية *</label>
+          <input type="text" name="working_hours_ar" value="{{ settings.working_hours_ar }}" required class="w-full bg-deep border border-white/15 rounded-xl px-4 py-2.5 text-xs text-white focus:border-gold outline-none">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-gray-300 mb-1">Working Hours (English) *</label>
+          <input type="text" name="working_hours_en" value="{{ settings.working_hours_en }}" required class="w-full bg-deep border border-white/15 rounded-xl px-4 py-2.5 text-xs text-white focus:border-gold outline-none" dir="ltr">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DEPOSIT & GUARANTEE POLICY -->
+  <div class="glass-card rounded-3xl p-6 sm:p-8 border border-white/15">
+    <h3 class="text-base font-bold text-gold uppercase tracking-wider mb-6 flex items-center gap-2">
+      <i class="fas fa-file-contract"></i>
+      <span>3. سياسة العربون والضمان البنكي</span>
+    </h3>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div>
+        <label class="block text-xs font-bold text-gray-300 mb-1">سياسة الحجز بالعربية *</label>
+        <textarea name="deposit_policy_ar" rows="3" required class="w-full bg-deep border border-white/15 rounded-xl p-3 text-xs text-white focus:border-gold outline-none leading-relaxed">{{ settings.deposit_policy_ar }}</textarea>
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold text-gray-300 mb-1">Deposit Policy (English) *</label>
+        <textarea name="deposit_policy_en" rows="3" required class="w-full bg-deep border border-white/15 rounded-xl p-3 text-xs text-white focus:border-gold outline-none leading-relaxed" dir="ltr">{{ settings.deposit_policy_en }}</textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADMIN CREDENTIALS UPDATE -->
+  <div class="glass-card rounded-3xl p-6 sm:p-8 border border-white/15">
+    <h3 class="text-base font-bold text-gold uppercase tracking-wider mb-4 flex items-center gap-2">
+      <i class="fas fa-key"></i>
+      <span>4. تغيير كلمة مرور مالك المنصة</span>
+    </h3>
+    <p class="text-xs text-gray-400 mb-4">اترك هذا الحقل فارغاً إذا كنت لا ترغب في تغيير كلمة المرور الحالية.</p>
+
+    <div class="max-w-md">
+      <label class="block text-xs font-bold text-gray-300 mb-1">كلمة المرور الجديدة (6 أحرف على الأقل)</label>
+      <input type="password" name="admin_new_password" placeholder="••••••••••••" class="w-full bg-deep border border-white/15 rounded-xl px-4 py-2.5 text-xs text-white font-mono focus:border-gold outline-none" dir="ltr">
+    </div>
+  </div>
+
+  <!-- SAVE BUTTON -->
+  <div class="flex justify-end">
+    <button type="submit" class="gold-btn px-8 py-3 rounded-xl text-xs font-bold shadow-xl flex items-center gap-2">
+      <i class="fas fa-save"></i>
+      <span>حفظ وتطبيق جميع الإعدادات</span>
+    </button>
+  </div>
+
+</form>
+
+{% endblock %}

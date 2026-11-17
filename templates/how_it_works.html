@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+
+{% block title %}
+  {% if lang == 'ar' %}دليل وخطوات استيراد السيارات إلى مصر | Syartk{% else %}Automotive Import Process Guide Egypt | Syartk{% endif %}
+{% endblock %}
+
+{% block content %}
+
+<!-- Header Banner -->
+<div class="bg-charcoal/80 border-b border-white/10 py-16">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center max-w-3xl">
+    <span class="text-xs uppercase font-bold text-gold tracking-widest block mb-2">
+      {% if lang == 'ar' %}دليل الشفافية والضمان{% else %}Complete Transparency & Guarantee Guide{% endif %}
+    </span>
+    <h1 class="text-3xl sm:text-5xl font-black text-white">
+      {% if lang == 'ar' %}كيف تستورد سيارتك عبر منصة Syartk؟{% else %}How to Import Your Vehicle to Egypt with Syartk{% endif %}
+    </h1>
+    <p class="text-gray-300 text-sm mt-3 leading-relaxed">
+      {% if lang == 'ar' %}
+        دليلك الشامل لفهم مراحل الفحص الأوروبي والكوري، الشحن البحري، وتخليص الجمارك المصرية الرسمية دون أي تعقيد.
+      {% else %}
+        Comprehensive guide detailing European & Korean vehicle auditing, maritime logistics, and Egyptian port customs clearance.
+      {% endif %}
+    </p>
+  </div>
+</div>
+
+<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-16">
+  
+  <!-- Section 1: Detailed 5 Pillars -->
+  <div class="space-y-12">
+    
+    <!-- Pillar 1 -->
+    <div class="glass-card rounded-3xl p-8 border border-white/15 flex flex-col md:flex-row gap-8 items-start">
+      <div class="w-16 h-16 rounded-2xl bg-gold text-black font-black text-2xl flex items-center justify-center flex-shrink-0 shadow-xl shadow-gold/20">
+        01
+      </div>
+      <div>
+        <h3 class="text-xl font-bold text-white mb-2">
+          {% if lang == 'ar' %}اختيار السيارة وفحص الصالة المعتمدة بالخارج{% else %}Vehicle Sourcing & Certified Overseas Audit{% endif %}
+        </h3>
+        <p class="text-gray-300 text-xs sm:text-sm leading-relaxed mb-4">
+          {% if lang == 'ar' %}
+            يتم فحص تاريخ المركبة إلكترونياً للتأكد من خلوها من الحوادث وسجل الصيانة الرسمي في ألمانيا أو كوريا الجنوبية أو الإمارات. نرسل خبير فحص مستقل (Dekra أو K-Car) لإجراء فحص ميكانيكي للشاسيه والمحرك وقياس سمك الدهان بجهاز الديجيتال.
+          {% else %}
+            Vehicle history is checked electronically for accident-free status and full dealer service records. Certified Dekra or K-Car specialists perform a 111-point audit and electronic paint thickness measurement.
+          {% endif %}
+        </p>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs text-gray-300">
+          <div class="p-3 bg-black/40 rounded-xl border border-white/5 flex items-center gap-2">
+            <i class="fas fa-check text-emerald-400"></i>
+            <span>{% if lang == 'ar' %}تقرير دهان المصنع فابريكة{% else %}100% Factory Paint Test{% endif %}</span>
+          </div>
+          <div class="p-3 bg-black/40 rounded-xl border border-white/5 flex items-center gap-2">
+            <i class="fas fa-check text-emerald-400"></i>
+            <span>{% if lang == 'ar' %}فيديو تشغيلي للمحرك 4K{% else %}4K Live Engine Walkaround{% endif %}</span>
+          </div>
+          <div class="p-3 bg-black/40 rounded-xl border border-white/5 flex items-center gap-2">
+            <i class="fas fa-check text-emerald-400"></i>
+            <span>{% if lang == 'ar' %}فحص كمبيوتر الأعطال OBD-II{% else %}Full OBD-II Diagnostic Scan{% endif %}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pillar 2 -->
+    <div class="glass-card rounded-3xl p-8 border border-white/15 flex flex-col md:flex-row gap-8 items-start">
+      <div class="w-16 h-16 rounded-2xl bg-gold text-black font-black text-2xl flex items-center justify-center flex-shrink-0 shadow-xl shadow-gold/20">
+        02
+      </div>
+      <div>
+        <h3 class="text-xl font-bold text-white mb-2">
+          {% if lang == 'ar' %}التعاقد الرسمي وسداد عربون الجدية{% else %}Contract Signing & Booking Deposit{% endif %}
+        </h3>
+        <p class="text-gray-300 text-xs sm:text-sm leading-relaxed mb-4">
+          {% if lang == 'ar' %}
+            يتم توقيع عقد استيراد رسمي مختوم ومسجل بمقر صالة Syartk بالقاهرة، يتضمن رقم الشاسيه الدقيق والمواصفات الكاملة والسعر الإجمالي النهائي. يتم سداد عربون تأكيد الجدية في الحساب البنكي الرسمي أو إنستاباي ويخصم بالكامل من القيمة.
+          {% else %}
+            An official commercial contract is signed specifying exact VIN, full specs, and fixed final price. The reservation deposit is settled via bank wire or InstaPay, fully credited to vehicle total.
+          {% endif %}
+        </p>
+      </div>
+    </div>
+
+    <!-- Pillar 3 -->
+    <div class="glass-card rounded-3xl p-8 border border-white/15 flex flex-col md:flex-row gap-8 items-start">
+      <div class="w-16 h-16 rounded-2xl bg-gold text-black font-black text-2xl flex items-center justify-center flex-shrink-0 shadow-xl shadow-gold/20">
+        03
+      </div>
+      <div>
+        <h3 class="text-xl font-bold text-white mb-2">
+          {% if lang == 'ar' %}الشحن البحري المؤمن والتوثيق الدولي{% else %}Insured Marine Container Transit & Euro 1{% endif %}
+        </h3>
+        <p class="text-gray-300 text-xs sm:text-sm leading-relaxed mb-4">
+          {% if lang == 'ar' %}
+            يتم شحن السيارة داخل حاوية بحرية مغلقة مخصصة (Containerized Shipping) لحمايتها تماماً من العوامل الجوية والخدوش، مع بوليصة تأمين شاملة 100% تغطي كامل قيمة السيارة حتى الوصول للموانئ المصرية (الإسكندرية / السخنة).
+          {% else %}
+            Vehicles are loaded into dedicated enclosed containers to prevent transit exposure, backed by 100% all-risk marine insurance until discharge at Alexandria or Sokhna ports.
+          {% endif %}
+        </p>
+      </div>
+    </div>
+
+    <!-- Pillar 4 -->
+    <div class="glass-card rounded-3xl p-8 border border-white/15 flex flex-col md:flex-row gap-8 items-start">
+      <div class="w-16 h-16 rounded-2xl bg-gold text-black font-black text-2xl flex items-center justify-center flex-shrink-0 shadow-xl shadow-gold/20">
+        04
+      </div>
+      <div>
+        <h3 class="text-xl font-bold text-white mb-2">
+          {% if lang == 'ar' %}التخليص الجمركي واستخراج الإفراج الرسمي في مصر{% else %}Egyptian Customs Clearance & Legal Release{% endif %}
+        </h3>
+        <p class="text-gray-300 text-xs sm:text-sm leading-relaxed mb-4">
+          {% if lang == 'ar' %}
+            فريق Syartk المتخصص بالتخليص الجمركي يتولى إنهاء كافة إجراءات لجان الفحص الفني، فحص المرور، تسوية ضريبة القيمة المضافة ورسم التنمية، واستخراج أصل الشهادة الجمركية الموجهة لإدارة المرور باسم العميل مباشرة.
+          {% else %}
+            Our seasoned customs brokers handle official technical committees, VAT settlement, development fees, and acquire the formal customs release certificate addressed to your local licensing department.
+          {% endif %}
+        </p>
+      </div>
+    </div>
+
+    <!-- Pillar 5 -->
+    <div class="glass-card rounded-3xl p-8 border border-white/15 flex flex-col md:flex-row gap-8 items-start">
+      <div class="w-16 h-16 rounded-2xl bg-emerald-500 text-black font-black text-2xl flex items-center justify-center flex-shrink-0 shadow-xl shadow-emerald-500/20">
+        05
+      </div>
+      <div>
+        <h3 class="text-xl font-bold text-white mb-2">
+          {% if lang == 'ar' %}التسليم الملكي والترخيص المروري{% else %}Showroom Handover & Traffic Plates Assistance{% endif %}
+        </h3>
+        <p class="text-gray-300 text-xs sm:text-sm leading-relaxed mb-4">
+          {% if lang == 'ar' %}
+            تستلم سيارتك مجهزة بأعلى درجات التلميع والعناية (Nano Ceramic Detailing) بمقر صالتنا في مدينة العبور - القاهرة، أو يتم تسليمها بكساحة نقل خاصة حتى باب قصرك أو منزلك مع كامل ملف الأوراق والمفاتيح الأصلية.
+          {% else %}
+            Receive your automobile detailed with premium nano ceramic polish at our El Obour City - Cairo showroom, or private flatbed carrier delivery to your residence with original master keys and documentation.
+          {% endif %}
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FAQ Accordion / Cards -->
+  <div class="glass-panel p-8 rounded-3xl border border-white/10">
+    <h3 class="text-2xl font-bold text-white mb-6 text-center">
+      {% if lang == 'ar' %}الأسئلة الشائعة حول استيراد السيارات لمصر{% else %}Frequently Asked Questions{% endif %}
+    </h3>
+
+    <div class="space-y-4 text-xs sm:text-sm">
+      <div class="p-4 bg-black/40 rounded-2xl border border-white/5">
+        <h4 class="font-bold text-gold mb-1">{% if lang == 'ar' %}كم يستغرق وصول السيارة من تاريخ التعاقد؟{% else %}How long does the entire import process take?{% endif %}</h4>
+        <p class="text-gray-300">{% if lang == 'ar' %}من 14 إلى 22 يوم عمل للشحن من أوروبا (ألمانيا)، ومن 20 إلى 28 يوم عمل للشحن من كوريا الجنوبية، ومن 10 إلى 15 يوم عمل للمواصفات الخليجية (الإمارات).{% else %}14-22 business days from Germany, 20-28 days from South Korea, and 10-15 days for UAE GCC vehicles.{% endif %}</p>
+      </div>
+
+      <div class="p-4 bg-black/40 rounded-2xl border border-white/5">
+        <h4 class="font-bold text-gold mb-1">{% if lang == 'ar' %}هل الأسعار المعلنة نهائية وشاملة الجمارك؟{% else %}Are the quoted prices inclusive of customs and shipping?{% endif %}</h4>
+        <p class="text-gray-300">{% if lang == 'ar' %}نعم، الأسعار المعروضة على Syartk محددة بالجنيه المصري وشاملة ثمن السيارة، الشحن البحري، التأمين، والتخليص الجمركي بالكامل حتى الاستلام.{% else %}Yes, all quoted prices in EGP include car cost, marine shipping, freight insurance, and port customs clearance.{% endif %}</p>
+      </div>
+
+      <div class="p-4 bg-black/40 rounded-2xl border border-white/5">
+        <h4 class="font-bold text-gold mb-1">{% if lang == 'ar' %}ما هو الضمان المقدم على حالة السيارة؟{% else %}What guarantee is provided on vehicle mechanical condition?{% endif %}</h4>
+        <p class="text-gray-300">{% if lang == 'ar' %}نضمن مطابقة السيارة بنسبة 100% لتقرير الفحص المعتمد وخلوها التام من أي حوادث أو دهانات فابريكة. في حال ثبوت أي اختلاف، يحق للعميل استرداد عربونه بالكامل فوراً.{% else %}We guarantee 100% compliance with certified inspection reports. If any discrepancy is discovered, your deposit is 100% refunded immediately.{% endif %}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom CTA -->
+  <div class="text-center pt-8">
+    <a href="/vehicles" class="gold-btn px-8 py-3.5 rounded-xl font-bold text-xs sm:text-sm inline-flex items-center gap-2">
+      <i class="fas fa-car"></i>
+      <span>{% if lang == 'ar' %}استعرض سيارات المعرض المتاحة الآن{% else %}Explore Available Vehicles Now{% endif %}</span>
+    </a>
+  </div>
+
+</div>
+
+{% endblock %}
